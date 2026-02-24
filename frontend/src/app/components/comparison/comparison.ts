@@ -1,17 +1,6 @@
 import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-
-interface ComparisonResult {
-  algorithmName: string;
-  arraySize: number;
-  generationMode: string;
-  numberOfRuns: number;
-  avgRuntime: string;
-  minRuntime: string;
-  maxRuntime: string;
-  comparisons: number;
-  interchanges: number;
-}
+import {ComparisonResult} from '../../models/comparison-result.model';
 
 @Component({
   selector: 'app-comparison',
