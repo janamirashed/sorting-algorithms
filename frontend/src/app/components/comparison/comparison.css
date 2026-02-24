@@ -1,0 +1,167 @@
+.comparison-page {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.page-header {
+    margin-bottom: 4px;
+}
+
+.page-header h1 {
+    font-size: 1.65rem;
+    font-weight: 700;
+    color: var(--color-text);
+}
+
+.page-subtitle {
+    font-size: 0.9rem;
+    color: var(--color-text-secondary);
+    margin-top: 4px;
+}
+
+.card-title {
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 20px;
+    color: var(--color-text);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.card-title::before {
+    content: '';
+    width: 4px;
+    height: 18px;
+    background: var(--color-primary);
+    border-radius: 2px;
+}
+
+.controls-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 20px;
+}
+
+.algorithms-group {
+    grid-column: 1 / -1;
+}
+
+.control-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.file-input {
+    padding: 8px 10px;
+    font-size: 0.82rem;
+}
+
+.file-input::file-selector-button {
+    font-family: var(--font-sans);
+    font-size: 0.8rem;
+    font-weight: 500;
+    padding: 6px 14px;
+    border: 1.5px solid var(--color-border);
+    border-radius: var(--radius-pill);
+    background: var(--color-surface);
+    color: var(--color-text);
+    cursor: pointer;
+    margin-right: 10px;
+    transition: all 0.2s ease;
+}
+
+.file-input::file-selector-button:hover {
+    border-color: var(--color-primary);
+    color: var(--color-primary);
+}
+
+.controls-actions {
+    display: flex;
+    gap: 12px;
+    margin-top: 24px;
+    padding-top: 20px;
+    border-top: 1px solid var(--color-border);
+}
+
+.results-card {
+    overflow: hidden;
+}
+
+.table-wrapper {
+    overflow-x: auto;
+    margin: -24px;
+    margin-top: 0;
+    padding: 0 24px 24px;
+}
+
+.algo-name {
+    font-weight: 600;
+    color: var(--color-text);
+    white-space: nowrap;
+    padding-left: 12px;
+    border-left: 3px solid transparent;
+}
+
+.data-table tbody tr:nth-child(6n+1) .algo-name {
+    border-left-color: var(--color-pastel-blue);
+}
+
+.data-table tbody tr:nth-child(6n+2) .algo-name {
+    border-left-color: var(--color-pastel-pink);
+}
+
+.data-table tbody tr:nth-child(6n+3) .algo-name {
+    border-left-color: var(--color-pastel-yellow);
+}
+
+.data-table tbody tr:nth-child(6n+4) .algo-name {
+    border-left-color: var(--color-pastel-peach);
+}
+
+.data-table tbody tr:nth-child(6n+5) .algo-name {
+    border-left-color: var(--color-pastel-lavender);
+}
+
+.data-table tbody tr:nth-child(6n+6) .algo-name {
+    border-left-color: var(--color-pastel-coral);
+}
+
+.data-table tbody tr:nth-child(6n+1):hover {
+    background: rgba(168, 216, 234, 0.08);
+}
+
+.data-table tbody tr:nth-child(6n+2):hover {
+    background: rgba(244, 184, 193, 0.08);
+}
+
+.data-table tbody tr:nth-child(6n+3):hover {
+    background: rgba(246, 232, 164, 0.08);
+}
+
+.data-table tbody tr:nth-child(6n+4):hover {
+    background: rgba(245, 199, 169, 0.08);
+}
+
+.data-table tbody tr:nth-child(6n+5):hover {
+    background: rgba(197, 185, 232, 0.08);
+}
+
+.data-table tbody tr:nth-child(6n+6):hover {
+    background: rgba(240, 168, 168, 0.08);
+}
+
+@media (max-width: 768px) {
+    .controls-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .controls-actions {
+        flex-direction: column;
+    }
+
+    .controls-actions .btn {
+        width: 100%;
+    }
+}

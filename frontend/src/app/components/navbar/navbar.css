@@ -1,0 +1,116 @@
+.dock {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(255, 255, 255, 0.92);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-radius: 999px;
+    padding: 8px 12px;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.1), 0 1px 4px rgba(0, 0, 0, 0.04);
+    z-index: 1000;
+    border: 1px solid rgba(224, 229, 227, 0.6);
+}
+
+.dock-item {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    padding: 10px 14px;
+    border-radius: 999px;
+    text-decoration: none;
+    color: var(--color-text-secondary);
+    font-size: 0.85rem;
+    font-weight: 500;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    white-space: nowrap;
+}
+
+.dock-item:hover {
+    color: var(--color-primary);
+    background: rgba(168, 213, 186, 0.12);
+}
+
+.dock-icon {
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+    transition: transform 0.2s ease;
+}
+
+.dock-item:hover .dock-icon {
+    transform: scale(1.1);
+}
+
+.dock-label {
+    max-width: 0;
+    opacity: 0;
+    overflow: hidden;
+    transition: max-width 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+        opacity 0.25s ease,
+        margin 0.35s ease;
+    margin-left: 0;
+}
+
+.dock-item.active {
+    background: rgba(168, 213, 186, 0.22);
+    color: var(--color-primary);
+}
+
+.dock-item.active .dock-label {
+    max-width: 120px;
+    opacity: 1;
+    margin-left: 8px;
+}
+
+.dock-item.active .dock-icon {
+    transform: scale(1.05);
+}
+
+.dock-item:not(.active)::after {
+    content: attr(aria-label);
+    position: absolute;
+    bottom: calc(100% + 10px);
+    left: 50%;
+    transform: translateX(-50%) translateY(4px);
+    background: var(--color-text);
+    color: #fff;
+    font-size: 0.72rem;
+    font-weight: 500;
+    padding: 4px 10px;
+    border-radius: 6px;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.dock-item:not(.active):hover::after {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+}
+
+@media (max-width: 480px) {
+    .dock {
+        bottom: 12px;
+        padding: 6px 10px;
+        gap: 4px;
+    }
+
+    .dock-item {
+        padding: 8px 12px;
+        font-size: 0.8rem;
+    }
+
+    .dock-icon {
+        width: 18px;
+        height: 18px;
+    }
+}

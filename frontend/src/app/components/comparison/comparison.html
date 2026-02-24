@@ -1,1 +1,123 @@
-<p>comparison works!</p>
+<div class="comparison-page">
+
+    <!-- Page Header -->
+    <div class="page-header">
+        <h1>Sorting Comparison</h1>
+        <p class="page-subtitle">Compare sorting algorithms across different array types and sizes</p>
+    </div>
+
+    <!-- Input Controls Card -->
+    <div class="card controls-card">
+        <h3 class="card-title">Configuration</h3>
+
+        <div class="controls-grid">
+
+            <!-- Algorithms Selection -->
+            <div class="control-group algorithms-group">
+                <label class="form-label">Algorithms</label>
+                <div class="checkbox-group">
+                    @for (algo of algorithms; track algo) {
+                    <label class="checkbox-item">
+                        <input type="checkbox" [checked]="selectedAlgorithms.includes(algo)"
+                            (change)="toggleAlgorithm(algo)" />
+                        {{ algo }}
+                    </label>
+                    }
+                </div>
+            </div>
+
+            <!-- Array Type -->
+            <div class="control-group">
+                <label class="form-label">Array Type</label>
+                <select class="form-select" [(ngModel)]="arrayType">
+                    <option value="RANDOM">Random</option>
+                    <option value="SORTED">Sorted</option>
+                    <option value="INVERSELY_SORTED">Inversely Sorted</option>
+                </select>
+            </div>
+
+            <!-- Array Size -->
+            <div class="control-group">
+                <label class="form-label">Array Size</label>
+                <input type="number" class="form-input" [(ngModel)]="arraySize" min="1" max="10000"
+                    placeholder="e.g. 1000" />
+            </div>
+
+            <!-- Number of Runs -->
+            <div class="control-group">
+                <label class="form-label">Number of Runs</label>
+                <input type="number" class="form-input" [(ngModel)]="numberOfRuns" min="1" max="100"
+                    placeholder="e.g. 5" />
+            </div>
+
+            <!-- File Upload -->
+            <div class="control-group">
+                <label class="form-label">Or Upload File (.txt)</label>
+                <input type="file" class="form-input file-input" accept=".txt" (change)="onFileSelected($event)" />
+            </div>
+
+        </div>
+
+        <!-- Action Button -->
+        <div class="controls-actions">
+            <button class="btn btn-primary" (click)="runComparison()" [disabled]="selectedAlgorithms.length === 0">
+                Run Comparison
+            </button>
+            <button class="btn btn-outline" (click)="clearResults()">
+                Clear
+            </button>
+        </div>
+    </div>
+
+    <!-- Results Card -->
+    <div class="card results-card">
+        <h3 class="card-title">Results</h3>
+
+        @if (results.length === 0) {
+        <div class="empty-state">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
+                stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="12" width="4" height="9" rx="1" />
+                <rect x="10" y="5" width="4" height="16" rx="1" />
+                <rect x="17" y="8" width="4" height="13" rx="1" />
+            </svg>
+            <span>No results yet</span>
+            <span>Configure and run a comparison to see results here</span>
+        </div>
+        } @else {
+        <div class="table-wrapper">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Algorithm</th>
+                        <th>Array Size</th>
+                        <th>Generation Mode</th>
+                        <th>Runs</th>
+                        <th>Avg Runtime</th>
+                        <th>Min Runtime</th>
+                        <th>Max Runtime</th>
+                        <th>Comparisons</th>
+                        <th>Interchanges</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @for (row of results; track row.algorithmName) {
+                    <tr>
+                        <td class="algo-name">{{ row.algorithmName }}</td>
+                        <td>{{ row.arraySize }}</td>
+                        <td>{{ row.generationMode }}</td>
+                        <td>{{ row.numberOfRuns }}</td>
+                        <td><span class="complexity-pill mint">{{ row.avgRuntime }}</span></td>
+                        <td><span class="complexity-pill lavender">{{ row.minRuntime }}</span></td>
+                        <td><span class="complexity-pill blush">{{ row.maxRuntime }}</span></td>
+                        <td>{{ row.comparisons }}</td>
+                        <td>{{ row.interchanges }}</td>
+                    </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+        }
+    </div>
+
+</div>

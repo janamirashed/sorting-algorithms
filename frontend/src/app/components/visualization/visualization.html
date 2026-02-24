@@ -1,1 +1,158 @@
-<p>visualization works!</p>
+<div class="visualization-page">
+
+    <!-- Page Header -->
+    <div class="page-header">
+        <h1>Sorting Visualization</h1>
+        <p class="page-subtitle">Visualize the step-by-step sorting process for arrays up to 100 elements</p>
+    </div>
+
+    <!-- Controls Card -->
+    <div class="card controls-card">
+        <h3 class="card-title">Configuration</h3>
+
+        <div class="controls-row">
+
+            <!-- Algorithm Select -->
+            <div class="control-group">
+                <label class="form-label">Algorithm</label>
+                <select class="form-select" [(ngModel)]="selectedAlgorithm">
+                    @for (algo of algorithms; track algo) {
+                    <option [value]="algo">{{ algo }}</option>
+                    }
+                </select>
+            </div>
+
+            <!-- Array Size -->
+            <div class="control-group">
+                <label class="form-label">Array Size</label>
+                <input type="number" class="form-input" [(ngModel)]="arraySize" min="2" max="100"
+                    placeholder="e.g. 30" />
+            </div>
+
+            <!-- Array Type -->
+            <div class="control-group">
+                <label class="form-label">Array Type</label>
+                <select class="form-select" [(ngModel)]="arrayType">
+                    <option value="RANDOM">Random</option>
+                    <option value="SORTED">Sorted</option>
+                    <option value="INVERSELY_SORTED">Inversely Sorted</option>
+                </select>
+            </div>
+
+            <!-- Speed -->
+            <div class="control-group speed-group">
+                <label class="form-label">Speed</label>
+                <div class="speed-control">
+                    <span class="speed-label">Slow</span>
+                    <input type="range" [(ngModel)]="speed" min="1" max="100" step="1" />
+                    <span class="speed-label">Fast</span>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Manual Input -->
+        <div class="manual-input-row">
+            <div class="control-group manual-group">
+                <label class="form-label">Or enter comma-separated values</label>
+                <input type="text" class="form-input" [(ngModel)]="manualInput"
+                    placeholder="e.g. 5, 3, 8, 1, 9, 2, 7" />
+            </div>
+        </div>
+
+        <!-- Playback Controls -->
+        <div class="playback-controls">
+            <button class="btn btn-primary" (click)="onGenerate()">
+                Generate Array
+            </button>
+            <div class="playback-buttons">
+                <button class="btn btn-outline btn-sm" (click)="onReset()" [disabled]="!hasArray">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
+                        <path d="M3 3v5h5" />
+                    </svg>
+                    Reset
+                </button>
+                <button class="btn btn-outline btn-sm" (click)="onStepForward()" [disabled]="!hasArray || isPlaying">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <polygon points="5,4 15,12 5,20" />
+                        <line x1="19" y1="5" x2="19" y2="19" />
+                    </svg>
+                    Step
+                </button>
+                <button class="btn btn-primary" (click)="onPlayPause()" [disabled]="!hasArray">
+                    @if (isPlaying) {
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="6" y="4" width="4" height="16" />
+                        <rect x="14" y="4" width="4" height="16" />
+                    </svg>
+                    Pause
+                    } @else {
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <polygon points="5,3 19,12 5,21" fill="currentColor" />
+                    </svg>
+                    Play
+                    }
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Visualization Area Card -->
+    <div class="card viz-card">
+        <h3 class="card-title">Visualization</h3>
+
+        @if (!hasArray) {
+        <div class="empty-state">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
+                stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10" />
+                <polygon points="10,8 16,12 10,16" fill="currentColor" stroke="none" />
+            </svg>
+            <span>No array generated yet</span>
+            <span>Generate or enter an array to start visualization</span>
+        </div>
+        } @else {
+        <!-- Bar Chart -->
+        <div class="bars-container">
+            @for (bar of array; track $index; let i = $index) {
+            <div class="bar-wrapper">
+                <div class="bar" [style.height.%]="(bar / maxValue) * 100"
+                    [class.comparing]="comparingIndices.includes(i)" [class.swapping]="swappingIndices.includes(i)"
+                    [class.sorted]="sortedIndices.includes(i)">
+                </div>
+                @if (array.length <= 50) { <span class="bar-value">{{ bar }}</span>
+                    }
+            </div>
+            }
+        </div>
+
+        <!-- Step Info -->
+        <div class="step-info">
+            <span class="step-counter">Step {{ currentStep }} of {{ totalSteps }}</span>
+        </div>
+        }
+    </div>
+
+    <!-- Stats Card (shown after completion) -->
+    @if (isComplete) {
+    <div class="card stats-card">
+        <h3 class="card-title">Results</h3>
+        <div class="stats-grid">
+            <div class="stat-item">
+                <span class="stat-value">{{ totalComparisons }}</span>
+                <span class="stat-label">Comparisons</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-value">{{ totalInterchanges }}</span>
+                <span class="stat-label">Interchanges</span>
+            </div>
+        </div>
+    </div>
+    }
+
+</div>
