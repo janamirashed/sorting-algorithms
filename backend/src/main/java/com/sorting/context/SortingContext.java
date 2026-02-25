@@ -1,11 +1,13 @@
 package com.sorting.context;
 
 import com.sorting.strategy.SortingStrategy;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+@Component
 public class SortingContext {
 
     private final Map<String, SortingStrategy> strategyMap;
