@@ -23,6 +23,16 @@ export class SortingService {
     });
   }
 
+  compareWithFile(file: File, algorithmNames: string[], numberOfRuns: number):
+    Observable<ComparisonResult[]> {
+    const formData = new FormData()
+    formData.append('file', file);
+    algorithmNames.forEach(name => formData.append('algorithmNames', name));
+    formData.append('numberOfRuns', numberOfRuns.toString());
+
+    return this.http.post<ComparisonResult[]>(`${this.baseUrl}/compare/file`, formData);
+  }
+
   streamVisualization(
     algorithm: string,
     size: number,

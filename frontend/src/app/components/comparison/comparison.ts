@@ -45,18 +45,30 @@ export class Comparison {
   }
 
   runComparison(): void {
-    this.sortingService.compare({
-      algorithmNames: this.selectedAlgorithms,
-      arraySize: this.arraySize,
-      generationMode: this.arrayType,
-      numberOfRuns: this.numberOfRuns,
-    }).subscribe({
-      next: data => this.results = data,
-      error: (err) => console.error('Comparison failed:', err),
-    });
+    if (this.selectedFile) {
+      this.sortingService.compareWithFile(
+        this.selectedFile,
+        this.selectedAlgorithms,
+        this.numberOfRuns
+      ).subscribe({
+        next: data => this.results = data,
+        error: (err) => console.error('Comparison failed:', err),
+      });
+    } else {
+      this.sortingService.compare({
+        algorithmNames: this.selectedAlgorithms,
+        arraySize: this.arraySize,
+        generationMode: this.arrayType,
+        numberOfRuns: this.numberOfRuns,
+      }).subscribe({
+        next: data => this.results = data,
+        error: (err) => console.error('Comparison failed:', err),
+      });
+    }
   }
 
   clearResults(): void {
     this.results = [];
+    this.selectedFile = null;
   }
 }
