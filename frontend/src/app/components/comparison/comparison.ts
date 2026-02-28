@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
-import { FormsModule } from '@angular/forms';
-import {ComparisonResult} from '../../models/comparison-result.model';
+import {FormBuilder, FormsModule} from '@angular/forms';
+import { ComparisonResult } from '../../models/comparison-result.model';
+import { SortingService } from '../../services/sorting.service';
 
 @Component({
   selector: 'app-comparison',
@@ -25,6 +26,8 @@ export class Comparison {
   selectedFile: File | null = null;
   results: ComparisonResult[] = [];
 
+  constructor(private sortingService: SortingService) {}
+
   toggleAlgorithm(algo: string): void {
     const index = this.selectedAlgorithms.indexOf(algo);
     if (index > -1) {
@@ -42,13 +45,14 @@ export class Comparison {
   }
 
   runComparison(): void {
-    // Placeholder -- will be wired to SortingService later
-    console.log('Running comparison with:', {
-      algorithms: this.selectedAlgorithms,
-      arrayType: this.arrayType,
+    this.sortingService.compare({
+      algorithmNames: this.selectedAlgorithms,
       arraySize: this.arraySize,
+      generationMode: this.arrayType,
       numberOfRuns: this.numberOfRuns,
-      file: this.selectedFile?.name,
+    }).subscribe({
+      next: data => this.results = data,
+      error: (err) => console.error('Comparison failed:', err),
     });
   }
 

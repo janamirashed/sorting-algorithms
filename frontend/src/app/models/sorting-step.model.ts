@@ -1,8 +1,8 @@
 export interface SortingStep {
   array: number[];
-  comparingIndcies: number;
-  swappingIndcies: number;
-  sortedIndcies: number[];
+  comparingIndices: number;
+  swappingIndices: number;
+  sortedIndices: number[];
   stepNumber: number;
   totalComparisons: number;
   totalInterchanges: number;

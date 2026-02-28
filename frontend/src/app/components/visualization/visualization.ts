@@ -1,5 +1,7 @@
 import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { Subscription } from 'rxjs';
+import { SortingService } from '../../services/sorting.service';
 
 @Component({
   selector: 'app-visualization',
@@ -38,6 +40,9 @@ export class Visualization {
   swappingIndices: number[] = [];
   sortedIndices: number[] = [];
 
+  private subscription: Subscription | null = null;
+  constructor(private sortingService: SortingService) {}
+
   onGenerate(): void {
     if (this.manualInput.trim()) {
       this.array = this.manualInput
@@ -60,12 +65,32 @@ export class Visualization {
   }
 
   onPlayPause(): void {
-    this.isPlaying = !this.isPlaying;
-    // Placeholder -- will be wired to SSE visualization stream
-    console.log(this.isPlaying ? 'Playing' : 'Paused', {
-      algorithm: this.selectedAlgorithm,
-      speed: this.speed,
-    });
+    if (this.isPlaying) {
+      this.isPlaying = false;
+      this.subscription?.unsubscribe();
+      return;
+    }
+    this.isPlaying = true;
+    this.subscription = this.sortingService
+      .streamVisualization(this.selectedAlgorithm, this.arraySize, this.arrayType)
+      .subscribe({
+        next: (step) => {
+          this.array = step.array;
+          this.comparingIndices = [step.comparingIndices];
+          this.swappingIndices = [step.swappingIndices];
+          this.sortedIndices = step.sortedIndices;
+          this.currentStep = step.stepNumber;
+          this.totalComparisons = step.totalComparisons;
+          this.totalInterchanges = step.totalInterchanges;
+          if (step.isComplete) {
+            this.isComplete = true;
+            this.isPlaying = false;
+          }
+        },
+        complete: () => {
+          this.isPlaying = false;
+        },
+      });
   }
 
   onStepForward(): void {
@@ -74,6 +99,8 @@ export class Visualization {
   }
 
   onReset(): void {
+    this.subscription?.unsubscribe();
+    this.isPlaying = false;
     this.onGenerate();
   }
 
