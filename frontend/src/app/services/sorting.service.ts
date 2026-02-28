@@ -37,9 +37,10 @@ export class SortingService {
     algorithm: string,
     size: number,
     mode: string,
+    speed: number,
   ) : Observable<SortingStep> {
     return new Observable<SortingStep>((observer) => {
-      const url = `${this.baseUrl}/visualize/${algorithm}?size=${size}&mode=${mode}`;
+      const url = `${this.baseUrl}/visualize/${algorithm}?size=${size}&mode=${mode}&speed=${speed}`;
       const eventSource = new EventSource(url);
 
       eventSource.onmessage = (event) => {

@@ -25,11 +25,13 @@ public class VisualizationService {
         this.arrayGenerator = arrayGenerator;
     }
 
-    public SseEmitter streamVisualization(String algorithmName, int arraySize, String generationMode) {
+    public SseEmitter streamVisualization(String algorithmName, int arraySize, String generationMode, int speed) {
         SseEmitter emitter = new SseEmitter(Long.MAX_VALUE);
 
         ArrayGenerationType type = ArrayGenerationType.valueOf(generationMode.toUpperCase());
         int[] initialArray = arrayGenerator.generateArray(arraySize, type);
+
+        long delay = Math.max(1, 101 - speed);
 
         executor.execute(() -> {
             try {
@@ -39,10 +41,10 @@ public class VisualizationService {
                         false
                 );
 
-                sendStep(emitter, initialStep);
+                sendStep(emitter, initialStep, delay);
 
                 SortingStrategy strategy = sortingContext.getStrategy(algorithmName);
-                strategy.sortWithSteps(initialArray, step -> sendStep(emitter, step));
+                strategy.sortWithSteps(initialArray, step -> sendStep(emitter, step, delay));
 
                 emitter.send(SseEmitter.event().name("COMPLETE").data("Sorting finished"));
                 emitter.complete();
@@ -54,13 +56,13 @@ public class VisualizationService {
         return emitter;
     }
 
-    private void sendStep(SseEmitter emitter, SortingStep step) {
+    private void sendStep(SseEmitter emitter, SortingStep step, long delay) {
         try {
             emitter.send(SseEmitter.event()
                     .name("message")
                     .data(step));
 
-            Thread.sleep(50);
+            Thread.sleep(delay);
 
         } catch (IOException | InterruptedException e) {
             emitter.completeWithError(e);

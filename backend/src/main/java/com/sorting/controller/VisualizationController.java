@@ -19,8 +19,9 @@ public class VisualizationController {
     public SseEmitter streamSorting(
             @PathVariable String algorithm,
             @RequestParam(defaultValue = "20") int size,
-            @RequestParam(defaultValue = "RANDOM") String mode) {
+            @RequestParam(defaultValue = "RANDOM") String mode,
+            @RequestParam(defaultValue = "50") int speed) {
 
-        return visualizationService.streamVisualization(algorithm, size, mode);
+        return visualizationService.streamVisualization(algorithm, size, mode, speed);
     }
 }

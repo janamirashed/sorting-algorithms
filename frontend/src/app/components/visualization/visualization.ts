@@ -72,7 +72,7 @@ export class Visualization {
     }
     this.isPlaying = true;
     this.subscription = this.sortingService
-      .streamVisualization(this.selectedAlgorithm, this.arraySize, this.arrayType)
+      .streamVisualization(this.selectedAlgorithm, this.arraySize, this.arrayType, this.speed)
       .subscribe({
         next: (step) => {
           this.array = step.array;
