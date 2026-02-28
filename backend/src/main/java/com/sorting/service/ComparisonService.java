@@ -4,8 +4,11 @@ import com.sorting.context.SortingContext;
 import com.sorting.model.*;
 import com.sorting.strategy.SortingStrategy;
 import com.sorting.util.ArrayGenerator;
+import com.sorting.util.FileParser;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,10 +17,12 @@ public class ComparisonService {
 
     private final SortingContext sortingContext;
     private final ArrayGenerator arrayGenerator;
+    private final FileParser fileParser;
 
-    public ComparisonService(SortingContext sortingContext, ArrayGenerator arrayGenerator) {
+    public ComparisonService(SortingContext sortingContext, ArrayGenerator arrayGenerator, FileParser fileParser) {
         this.sortingContext = sortingContext;
         this.arrayGenerator = arrayGenerator;
+        this.fileParser = fileParser;
     }
 
     public List<ComparisonResult> compare(SortingRequest request) {
@@ -62,6 +67,52 @@ public class ComparisonService {
                     formatNanos(maxRuntime),
                     totalComparisons / runs,
                     totalInterchanges / runs
+            );
+
+            results.add(result);
+        }
+
+        return results;
+    }
+
+    public List<ComparisonResult> compareWithFile(MultipartFile file, List<String> algorithmNames, int numberOfRuns) throws IOException {
+        List<ComparisonResult> results = new ArrayList<>();
+
+        int[] baseArray = fileParser.parseFile(file);
+        String fileName = file.getOriginalFilename();
+
+        for (String algorithmName : algorithmNames) {
+            SortingStrategy strategy = sortingContext.getStrategy(algorithmName);
+
+            long totalRuntime = 0;
+            long minRuntime = Long.MAX_VALUE;
+            long maxRuntime = Long.MIN_VALUE;
+            long totalComparisons = 0;
+            long totalInterchanges = 0;
+
+            for (int i = 0; i < numberOfRuns; i++) {
+                int[] array = baseArray.clone();
+
+                SortingResult sortingResult = strategy.sort(array);
+
+                totalRuntime += sortingResult.getRuntimeNanos();
+                minRuntime = Math.min(minRuntime, sortingResult.getRuntimeNanos());
+                maxRuntime = Math.max(maxRuntime, sortingResult.getRuntimeNanos());
+                totalComparisons += sortingResult.getComparisons();
+                totalInterchanges += sortingResult.getInterchanges();
+            }
+
+
+            ComparisonResult result = new ComparisonResult(
+                    algorithmName,
+                    baseArray.length,
+                    fileName,
+                    numberOfRuns,
+                    formatNanos(totalRuntime / numberOfRuns),
+                    formatNanos(minRuntime),
+                    formatNanos(maxRuntime),
+                    totalComparisons / numberOfRuns,
+                    totalInterchanges / numberOfRuns
             );
 
             results.add(result);
