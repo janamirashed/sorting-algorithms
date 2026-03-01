@@ -1,4 +1,23 @@
 package com.sorting.strategy;
 
-public class MergeSortStrategy {
+import com.sorting.model.SortingResult;
+import com.sorting.model.SortingStep;
+
+import java.util.function.Consumer;
+
+public class MergeSortStrategy implements SortingStrategy {
+    @Override
+    public SortingResult sort(int[] array) {
+        return null;
+    }
+
+    @Override
+    public void sortWithSteps(int[] array, Consumer<SortingStep> stepConsumer) {
+
+    }
+
+    @Override
+    public String getName() {
+        return "Merge Sort";
+    }
 }
