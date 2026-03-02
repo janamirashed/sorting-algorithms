@@ -2,9 +2,11 @@ package com.sorting.strategy;
 
 import com.sorting.model.SortingResult;
 import com.sorting.model.SortingStep;
+import org.springframework.stereotype.Component;
 
 import java.util.function.Consumer;
 
+@Component
 public class InsertionSortStrategy implements SortingStrategy {
     @Override
     public SortingResult sort(int[] array) {
@@ -12,7 +14,7 @@ public class InsertionSortStrategy implements SortingStrategy {
             int key = array[i];
             int j = i - 1;
 
-            while(j >= 0 && array[j] > key) {
+            while (j >= 0 && array[j] > key) {
                 array[j + 1] = array[j];
                 j--;
             }
@@ -33,22 +35,6 @@ public class InsertionSortStrategy implements SortingStrategy {
             int j = i - 1;
 
             stepConsumer.accept(new SortingStep(
-                array.clone(),
-                i,
-                j,
-                null,
-                stepCounter,
-                comparisons,
-                interchanges,
-                false
-            ));
-
-            while(j >= 0 && array[j] > key) {
-                comparisons++;
-                array[j + 1] = array[j];
-                interchanges++;
-
-                stepConsumer.accept(new SortingStep(
                     array.clone(),
                     i,
                     j,
@@ -56,24 +42,36 @@ public class InsertionSortStrategy implements SortingStrategy {
                     stepCounter,
                     comparisons,
                     interchanges,
-                    false
-                ));
+                    false));
+
+            while (j >= 0 && array[j] > key) {
+                comparisons++;
+                array[j + 1] = array[j];
+                interchanges++;
+
+                stepConsumer.accept(new SortingStep(
+                        array.clone(),
+                        i,
+                        j,
+                        null,
+                        stepCounter,
+                        comparisons,
+                        interchanges,
+                        false));
 
                 j--;
             }
-            
+
             if (j >= 0) {
                 comparisons++;
             }
             array[j + 1] = key;
             stepConsumer.accept(new SortingStep(
-                array.clone(), j + 1, -1, null, ++stepCounter, comparisons, interchanges, false
-            ));
+                    array.clone(), j + 1, -1, null, ++stepCounter, comparisons, interchanges, false));
         }
 
         stepConsumer.accept(new SortingStep(
-            array.clone(), -1, -1, null, ++stepCounter, comparisons, interchanges, true
-        ));
+                array.clone(), -1, -1, null, ++stepCounter, comparisons, interchanges, true));
     }
 
     @Override

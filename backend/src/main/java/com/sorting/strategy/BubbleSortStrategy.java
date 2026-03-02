@@ -2,18 +2,20 @@ package com.sorting.strategy;
 
 import com.sorting.model.SortingResult;
 import com.sorting.model.SortingStep;
+import org.springframework.stereotype.Component;
 
 import java.util.function.Consumer;
 
+@Component
 public class BubbleSortStrategy implements SortingStrategy {
     @Override
     public SortingResult sort(int[] array) {
         boolean isSwaped = true;
 
-        while(isSwaped) {
+        while (isSwaped) {
             isSwaped = false;
             for (int i = 0; i < array.length - 1; i++) {
-                if(array[i] > array[i + 1]) {
+                if (array[i] > array[i + 1]) {
                     isSwaped = true;
                     int temp = array[i];
                     array[i] = array[i + 1];
@@ -32,30 +34,12 @@ public class BubbleSortStrategy implements SortingStrategy {
         long comparisons = 0;
         long interchanges = 0;
 
-        while(isSwaped) {
+        while (isSwaped) {
             isSwaped = false;
             for (int i = 0; i < array.length - 1; i++) {
                 comparisons++;
 
                 stepConsumer.accept(new SortingStep(
-                    array.clone(),
-                    i,
-                    i + 1,
-                    null,
-                    stepCounter,
-                    comparisons,
-                    interchanges,
-                    false
-                ));
-
-                if(array[i] > array[i + 1]) {
-                    isSwaped = true;
-                    int temp = array[i];
-                    array[i] = array[i + 1];
-                    array[i + 1] = temp;
-                    interchanges++;
-
-                    stepConsumer.accept(new SortingStep(
                         array.clone(),
                         i,
                         i + 1,
@@ -63,22 +47,37 @@ public class BubbleSortStrategy implements SortingStrategy {
                         stepCounter,
                         comparisons,
                         interchanges,
-                        false
-                    ));
+                        false));
+
+                if (array[i] > array[i + 1]) {
+                    isSwaped = true;
+                    int temp = array[i];
+                    array[i] = array[i + 1];
+                    array[i + 1] = temp;
+                    interchanges++;
+
+                    stepConsumer.accept(new SortingStep(
+                            array.clone(),
+                            i,
+                            i + 1,
+                            null,
+                            stepCounter,
+                            comparisons,
+                            interchanges,
+                            false));
                 }
             }
         }
 
         stepConsumer.accept(new SortingStep(
-            array.clone(),
-            -1,
-            -1,
-            null,
-            stepCounter,
-            comparisons,
-            interchanges,
-            true
-        ));
+                array.clone(),
+                -1,
+                -1,
+                null,
+                stepCounter,
+                comparisons,
+                interchanges,
+                true));
     }
 
     @Override
