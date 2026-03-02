@@ -11,7 +11,6 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/compare")
-@CrossOrigin(origins = "*")
 public class ComparisonController {
     private final ComparisonService comparisonService;
 
@@ -31,17 +30,16 @@ public class ComparisonController {
     }
 
     @PostMapping("/file")
-    public ResponseEntity<List<ComparisonResult>> compareWithFile (@RequestParam("file") MultipartFile file,
-                                                                   @RequestParam("algorithmNames") List<String> algorithmNames,
-                                                                   @RequestParam("numberOfRuns") int numberOfRuns) {
+    public ResponseEntity<List<ComparisonResult>> compareWithFile(@RequestParam("file") MultipartFile file,
+            @RequestParam("algorithmNames") List<String> algorithmNames,
+            @RequestParam("numberOfRuns") int numberOfRuns) {
         if (algorithmNames == null || algorithmNames.isEmpty()) {
             return ResponseEntity.badRequest().build();
         }
 
         try {
             List<ComparisonResult> results = comparisonService.compareWithFile(
-                    file, algorithmNames, numberOfRuns
-            );
+                    file, algorithmNames, numberOfRuns);
             return ResponseEntity.ok(results);
         } catch (Exception e) {
             return ResponseEntity.badRequest().build();

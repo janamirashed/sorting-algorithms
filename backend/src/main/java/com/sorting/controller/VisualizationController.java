@@ -7,7 +7,6 @@ import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 @RestController
 @RequestMapping("/api/visualize")
-@CrossOrigin(origins = "*")
 public class VisualizationController {
     private final VisualizationService visualizationService;
 
