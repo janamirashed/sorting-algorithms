@@ -91,7 +91,7 @@ public class QuickSortStrategy implements SortingStrategy {
         int temp = array[leftPtr];
         array[leftPtr] = array[highIdx];
         array[highIdx] = temp;
-        counters[2]++;o
+        counters[2]++;
 
         stepConsumer.accept(new SortingStep(
                 array.clone(), leftPtr, highIdx, null, ++counters[0], counters[1], counters[2], false));
