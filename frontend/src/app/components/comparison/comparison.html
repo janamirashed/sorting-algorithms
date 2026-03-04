@@ -66,6 +66,13 @@
             <button class="btn btn-outline" (click)="clearResults()">
                 Clear
             </button>
+            <button class="btn btn-outline btn-export" (click)="exportCsv()" [disabled]="results.length === 0">
+                Export CSV
+            </button>
+            <button class="btn btn-primary btn-charts" (click)="generateCharts()"
+                [disabled]="results.length === 0 || isGeneratingCharts">
+                {{ isGeneratingCharts ? 'Generating...' : 'Generate Charts' }}
+            </button>
         </div>
     </div>
 
@@ -119,5 +126,37 @@
         </div>
         }
     </div>
+
+    <!-- Charts Card -->
+    @if (isGeneratingCharts || chartImages['runtime']) {
+    <div class="card charts-card">
+        <h3 class="card-title">Statistical Charts</h3>
+
+        @if (isGeneratingCharts) {
+        <div class="empty-state">
+            <div class="spinner"></div>
+            <span>Generating charts using Python &amp; Matplotlib...</span>
+        </div>
+        } @else {
+        <div class="charts-grid">
+            @if (chartImages['runtime']) {
+            <div class="chart-item">
+                <img [src]="'data:image/png;base64,' + chartImages['runtime']" alt="Runtime Comparison Chart" />
+            </div>
+            }
+            @if (chartImages['comparisons']) {
+            <div class="chart-item">
+                <img [src]="'data:image/png;base64,' + chartImages['comparisons']" alt="Comparisons Chart" />
+            </div>
+            }
+            @if (chartImages['interchanges']) {
+            <div class="chart-item">
+                <img [src]="'data:image/png;base64,' + chartImages['interchanges']" alt="Interchanges Chart" />
+            </div>
+            }
+        </div>
+        }
+    </div>
+    }
 
 </div>

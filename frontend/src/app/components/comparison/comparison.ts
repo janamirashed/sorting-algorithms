@@ -25,6 +25,8 @@ export class Comparison {
   numberOfRuns: number = 5;
   selectedFile: File | null = null;
   results: ComparisonResult[] = [];
+  chartImages: { [key: string]: string } = {};
+  isGeneratingCharts: boolean = false;
 
   constructor(private sortingService: SortingService, private cdr: ChangeDetectorRef) { }
 
@@ -76,5 +78,64 @@ export class Comparison {
   clearResults(): void {
     this.results = [];
     this.selectedFile = null;
+    this.chartImages = {};
+  }
+
+  generateCharts(): void {
+    if (this.results.length === 0) return;
+    this.isGeneratingCharts = true;
+
+    this.sortingService.generateCharts(this.results).subscribe({
+      next: (charts) => {
+        this.chartImages = charts;
+        this.isGeneratingCharts = false;
+        this.cdr.detectChanges();
+      },
+      error: (err) => {
+        console.error('Chart generation failed:', err);
+        this.isGeneratingCharts = false;
+        this.cdr.detectChanges();
+      },
+    });
+  }
+
+  exportCsv(): void {
+    if (this.results.length === 0) return;
+
+    const headers = [
+      'Algorithm',
+      'Array Size',
+      'Generation Mode',
+      'Number of Runs',
+      'Avg Runtime',
+      'Min Runtime',
+      'Max Runtime',
+      'Comparisons',
+      'Interchanges',
+    ];
+
+    const rows = this.results.map(r => [
+      r.algorithmName,
+      r.arraySize,
+      r.generationMode,
+      r.numberOfRuns,
+      r.avgRuntime,
+      r.minRuntime,
+      r.maxRuntime,
+      r.comparisons,
+      r.interchanges,
+    ].join(','));
+
+    const csvContent = [headers.join(','), ...rows].join('\n');
+
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = 'sorting_comparison.csv';
+    link.click();
+
+    URL.revokeObjectURL(url);
   }
 }

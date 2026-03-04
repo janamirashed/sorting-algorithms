@@ -33,6 +33,10 @@ export class SortingService {
     return this.http.post<ComparisonResult[]>(`${this.baseUrl}/compare/file`, formData);
   }
 
+  generateCharts(results: ComparisonResult[]): Observable<{ [key: string]: string }> {
+    return this.http.post<{ [key: string]: string }>(`${this.baseUrl}/compare/charts`, results);
+  }
+
   streamVisualization(
     algorithm: string,
     size: number,
