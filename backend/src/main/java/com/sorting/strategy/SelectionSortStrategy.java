@@ -45,7 +45,7 @@ public class SelectionSortStrategy implements SortingStrategy {
                 comparisons++;
 
                 stepConsumer.accept(new SortingStep(
-                        array.clone(), j, minIndex, null, ++stepCounter, comparisons, interchanges, false));
+                        array.clone(), j, minIndex, new int[0], ++stepCounter, comparisons, interchanges, false));
 
                 if (array[j] < array[minIndex]) {
                     minIndex = j;
@@ -57,11 +57,11 @@ public class SelectionSortStrategy implements SortingStrategy {
             array[i] = temp;
             interchanges++;
             stepConsumer.accept(new SortingStep(
-                    array.clone(), i, minIndex, null, ++stepCounter, comparisons, interchanges, false));
+                    array.clone(), i, minIndex, new int[0], ++stepCounter, comparisons, interchanges, false));
         }
 
         stepConsumer.accept(new SortingStep(
-                array.clone(), -1, -1, null, ++stepCounter, comparisons, interchanges, true));
+                array.clone(), -1, -1, new int[0], ++stepCounter, comparisons, interchanges, true));
     }
 
     @Override

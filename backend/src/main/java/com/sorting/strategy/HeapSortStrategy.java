@@ -77,13 +77,13 @@ public class HeapSortStrategy implements SortingStrategy {
             array[i] = temp;
 
             stepConsumer.accept(new SortingStep(
-                    array.clone(), 0, i, null, ++counters[0], counters[1], counters[2], false));
+                    array.clone(), 0, i, new int[0], ++counters[0], counters[1], counters[2], false));
 
             heapifyWithSteps(array, i, 0, stepConsumer, counters);
         }
 
         stepConsumer.accept(new SortingStep(
-                array.clone(), -1, -1, null, ++counters[0], counters[1], counters[2], true));
+                array.clone(), -1, -1, new int[0], ++counters[0], counters[1], counters[2], true));
     }
 
     private void heapifyWithSteps(int[] array, int n, int i, Consumer<SortingStep> stepConsumer, int[] counters) {
@@ -94,7 +94,7 @@ public class HeapSortStrategy implements SortingStrategy {
         if (left < n) {
             counters[1]++;
             stepConsumer.accept(new SortingStep(
-                    array.clone(), left, largest, null, ++counters[0], counters[1], counters[2], false));
+                    array.clone(), left, largest, new int[0], ++counters[0], counters[1], counters[2], false));
             if (array[left] > array[largest]) {
                 largest = left;
             }
@@ -103,7 +103,7 @@ public class HeapSortStrategy implements SortingStrategy {
         if (right < n) {
             counters[1]++;
             stepConsumer.accept(new SortingStep(
-                    array.clone(), right, largest, null, ++counters[0], counters[1], counters[2], false));
+                    array.clone(), right, largest, new int[0], ++counters[0], counters[1], counters[2], false));
             if (array[right] > array[largest]) {
                 largest = right;
             }
@@ -116,7 +116,7 @@ public class HeapSortStrategy implements SortingStrategy {
             counters[2]++;
 
             stepConsumer.accept(new SortingStep(
-                    array.clone(), i, largest, null, ++counters[0], counters[1], counters[2], false));
+                    array.clone(), i, largest, new int[0], ++counters[0], counters[1], counters[2], false));
 
             heapifyWithSteps(array, n, largest, stepConsumer, counters);
         }

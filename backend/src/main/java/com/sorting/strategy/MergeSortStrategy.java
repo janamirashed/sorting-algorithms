@@ -81,7 +81,7 @@ public class MergeSortStrategy implements SortingStrategy {
 
         mergeSortWithSteps(array, 0, array.length - 1, stepConsumer, counters);
         stepConsumer.accept(new SortingStep(
-                array.clone(), -1, -1, null, ++counters[0], counters[1], counters[2], true));
+                array.clone(), -1, -1, new int[0], ++counters[0], counters[1], counters[2], true));
     }
 
     private void mergeSortWithSteps(int[] array, int left, int right, Consumer<SortingStep> stepConsumer,
@@ -113,7 +113,7 @@ public class MergeSortStrategy implements SortingStrategy {
             counters[1]++;
 
             stepConsumer.accept(new SortingStep(
-                    array.clone(), left + i, mid + 1 + j, null, ++counters[0], counters[1], counters[2], false));
+                    array.clone(), left + i, mid + 1 + j, new int[0], ++counters[0], counters[1], counters[2], false));
 
             if (leftArr[i] <= rightArr[j]) {
                 array[k] = leftArr[i];
@@ -125,7 +125,7 @@ public class MergeSortStrategy implements SortingStrategy {
             counters[2]++;
 
             stepConsumer.accept(new SortingStep(
-                    array.clone(), k, -1, null, ++counters[0], counters[1], counters[2], false));
+                    array.clone(), k, -1, new int[0], ++counters[0], counters[1], counters[2], false));
 
             k++;
         }
@@ -135,7 +135,7 @@ public class MergeSortStrategy implements SortingStrategy {
             counters[2]++;
 
             stepConsumer.accept(new SortingStep(
-                    array.clone(), k, -1, null, ++counters[0], counters[1], counters[2], false));
+                    array.clone(), k, -1, new int[0], ++counters[0], counters[1], counters[2], false));
 
             i++;
             k++;
@@ -146,7 +146,7 @@ public class MergeSortStrategy implements SortingStrategy {
             counters[2]++;
 
             stepConsumer.accept(new SortingStep(
-                    array.clone(), k, -1, null, ++counters[0], counters[1], counters[2], false));
+                    array.clone(), k, -1, new int[0], ++counters[0], counters[1], counters[2], false));
 
             j++;
             k++;

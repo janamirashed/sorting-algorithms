@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ChangeDetectorRef } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Subscription } from 'rxjs';
 import { SortingService } from '../../services/sorting.service';
@@ -20,7 +20,7 @@ export class Visualization {
   ];
 
   selectedAlgorithm: string = 'Bubble Sort';
-  arraySize: number = 30;
+  arraySize: number = 10;
   arrayType: string = 'RANDOM';
   speed: number = 50;
   manualInput: string = '';
@@ -41,7 +41,7 @@ export class Visualization {
   sortedIndices: number[] = [];
 
   private subscription: Subscription | null = null;
-  constructor(private sortingService: SortingService) {}
+  constructor(private sortingService: SortingService, private cdr: ChangeDetectorRef) { }
 
   onGenerate(): void {
     if (this.manualInput.trim()) {
@@ -76,19 +76,23 @@ export class Visualization {
       .subscribe({
         next: (step) => {
           this.array = step.array;
-          this.comparingIndices = [step.comparingIndices];
-          this.swappingIndices = [step.swappingIndices];
-          this.sortedIndices = step.sortedIndices;
+          this.maxValue = Math.max(...this.array, 1);
+          this.comparingIndices = step.comparingIndices != null ? [step.comparingIndices] : [];
+          this.swappingIndices = step.swappingIndices != null ? [step.swappingIndices] : [];
+          this.sortedIndices = step.sortedIndices ?? [];
           this.currentStep = step.stepNumber;
           this.totalComparisons = step.totalComparisons;
           this.totalInterchanges = step.totalInterchanges;
-          if (step.isComplete) {
+          // Jackson serializes Java boolean 'isComplete' as 'complete'
+          if ((step as any).complete || step.isComplete) {
             this.isComplete = true;
             this.isPlaying = false;
           }
+          this.cdr.detectChanges();
         },
         complete: () => {
           this.isPlaying = false;
+          this.cdr.detectChanges();
         },
       });
   }

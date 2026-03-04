@@ -48,7 +48,7 @@ public class InsertionSortStrategy implements SortingStrategy {
                     array.clone(),
                     i,
                     j,
-                    null,
+                    new int[0],
                     stepCounter,
                     comparisons,
                     interchanges,
@@ -63,7 +63,7 @@ public class InsertionSortStrategy implements SortingStrategy {
                         array.clone(),
                         i,
                         j,
-                        null,
+                        new int[0],
                         stepCounter,
                         comparisons,
                         interchanges,
@@ -77,11 +77,11 @@ public class InsertionSortStrategy implements SortingStrategy {
             }
             array[j + 1] = key;
             stepConsumer.accept(new SortingStep(
-                    array.clone(), j + 1, -1, null, ++stepCounter, comparisons, interchanges, false));
+                    array.clone(), j + 1, -1, new int[0], ++stepCounter, comparisons, interchanges, false));
         }
 
         stepConsumer.accept(new SortingStep(
-                array.clone(), -1, -1, null, ++stepCounter, comparisons, interchanges, true));
+                array.clone(), -1, -1, new int[0], ++stepCounter, comparisons, interchanges, true));
     }
 
     @Override

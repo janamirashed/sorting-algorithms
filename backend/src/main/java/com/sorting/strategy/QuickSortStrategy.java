@@ -61,7 +61,7 @@ public class QuickSortStrategy implements SortingStrategy {
 
         quickSortWithSteps(array, 0, array.length - 1, stepConsumer, counters);
         stepConsumer.accept(new SortingStep(
-                array.clone(), -1, -1, null, ++counters[0], counters[1], counters[2], true));
+                array.clone(), -1, -1, new int[0], ++counters[0], counters[1], counters[2], true));
     }
 
     private void quickSortWithSteps(int[] array, int lowIdx, int highIdx, Consumer<SortingStep> stepConsumer,
@@ -78,13 +78,13 @@ public class QuickSortStrategy implements SortingStrategy {
             while (array[leftPtr] <= pivot && leftPtr < rightPtr) {
                 counters[1]++;
                 stepConsumer.accept(new SortingStep(
-                        array.clone(), leftPtr, highIdx, null, ++counters[0], counters[1], counters[2], false));
+                        array.clone(), leftPtr, highIdx, new int[0], ++counters[0], counters[1], counters[2], false));
                 leftPtr++;
             }
             while (array[rightPtr] >= pivot && leftPtr < rightPtr) {
                 counters[1]++;
                 stepConsumer.accept(new SortingStep(
-                        array.clone(), rightPtr, highIdx, null, ++counters[0], counters[1], counters[2], false));
+                        array.clone(), rightPtr, highIdx, new int[0], ++counters[0], counters[1], counters[2], false));
                 rightPtr--;
             }
 
@@ -95,7 +95,7 @@ public class QuickSortStrategy implements SortingStrategy {
                 counters[2]++;
 
                 stepConsumer.accept(new SortingStep(
-                        array.clone(), leftPtr, rightPtr, null, ++counters[0], counters[1], counters[2], false));
+                        array.clone(), leftPtr, rightPtr, new int[0], ++counters[0], counters[1], counters[2], false));
             }
         }
 
@@ -105,7 +105,7 @@ public class QuickSortStrategy implements SortingStrategy {
         counters[2]++;
 
         stepConsumer.accept(new SortingStep(
-                array.clone(), leftPtr, highIdx, null, ++counters[0], counters[1], counters[2], false));
+                array.clone(), leftPtr, highIdx, new int[0], ++counters[0], counters[1], counters[2], false));
 
         quickSortWithSteps(array, lowIdx, leftPtr - 1, stepConsumer, counters);
         quickSortWithSteps(array, leftPtr + 1, highIdx, stepConsumer, counters);
