@@ -117,46 +117,116 @@
             <span>Generate or enter an array to start visualization</span>
         </div>
         } @else {
-        <!-- Bar Chart -->
-        <div class="bars-container">
-            @for (bar of array; track $index; let i = $index) {
-            <div class="bar-wrapper">
-                <div class="bar" [style.height.%]="(bar / maxValue) * 100"
-                    [class.comparing]="comparingIndices.includes(i)" [class.swapping]="swappingIndices.includes(i)"
-                    [class.sorted]="sortedIndices.includes(i)">
-                </div>
-                @if (array.length <= 50) { <span class="bar-value">{{ bar }}</span>
+
+        <!-- HEAP SORT: Tree Visualization -->
+        @if (isHeapSort) {
+        <div class="tree-visualization-wrapper">
+            <!-- Tree View -->
+            <div class="tree-container">
+                <svg [attr.width]="treeSvgWidth" [attr.height]="treeSvgHeight" class="tree-svg">
+                    <!-- Edges -->
+                    @for (edge of treeEdges; track edge.from + '-' + edge.to) {
+                    <line [attr.x1]="edge.x1" [attr.y1]="edge.y1" [attr.x2]="edge.x2" [attr.y2]="edge.y2"
+                        class="tree-edge" />
                     }
+                    <!-- Nodes -->
+                    @for (node of treeNodes; track node.index) {
+                    <g class="tree-node-group">
+                        <circle [attr.cx]="node.x" [attr.cy]="node.y" [attr.r]="nodeRadius"
+                            [class.comparing]="comparingIndices.includes(node.index)"
+                            [class.swapping]="swappingIndices.includes(node.index)"
+                            [class.sorted]="sortedIndices.includes(node.index)"
+                            [class.default-node]="!comparingIndices.includes(node.index) && !swappingIndices.includes(node.index) && !sortedIndices.includes(node.index)"
+                            class="tree-node" />
+                        <text [attr.x]="node.x" [attr.y]="node.y" class="tree-node-text" dominant-baseline="central"
+                            text-anchor="middle">
+                            {{ node.value }}
+                        </text>
+                        <text [attr.x]="node.x" [attr.y]="node.y + nodeRadius + 14" class="tree-node-index"
+                            dominant-baseline="central" text-anchor="middle">
+                            [{{ node.index }}]
+                        </text>
+                    </g>
+                    }
+                </svg>
             </div>
-            }
-        </div>
 
-        <!-- Step Info -->
-        <div class="step-info">
-            <span class="step-counter">Step {{ currentStep }}</span>
-            <span style="margin: 0 10px; color: var(--color-border)">|</span>
-            <span class="step-counter">Comparisons: {{ totalComparisons }}</span>
-            <span style="margin: 0 10px; color: var(--color-border)">|</span>
-            <span class="step-counter">Interchanges: {{ totalInterchanges }}</span>
-        </div>
-        }
-    </div>
-
-    <!-- Stats Card (shown after completion) -->
-    @if (isComplete) {
-    <div class="card stats-card">
-        <h3 class="card-title">Results</h3>
-        <div class="stats-grid">
-            <div class="stat-item">
-                <span class="stat-value">{{ totalComparisons }}</span>
-                <span class="stat-label">Comparisons</span>
+            <!-- Array representation below the tree -->
+            <div class="heap-array-sections">
+                <div class="array-repr current-heap-repr">
+                    <span class="array-repr-label">Current Heap:</span>
+                    <div class="array-cells">
+                        @for (val of array; track $index; let i = $index) {
+                        @if (i < currentHeapSize) { <div class="array-cell"
+                            [class.comparing]="comparingIndices.includes(i)"
+                            [class.swapping]="swappingIndices.includes(i)">
+                            <span class="cell-index">{{ i }}</span>
+                            <span class="cell-value">{{ val }}</span>
+                    </div>
+                    }
+                    }
+                </div>
             </div>
-            <div class="stat-item">
-                <span class="stat-value">{{ totalInterchanges }}</span>
-                <span class="stat-label">Interchanges</span>
+
+            <div class="array-repr extracted-repr">
+                <span class="array-repr-label">Extracted (Sorted):</span>
+                <div class="array-cells">
+                    @if (sortedIndices.length === 0) {
+                    <div class="empty-list-text">No elements extracted yet</div>
+                    }
+                    @for (i of sortedIndices; track i) {
+                    <div class="array-cell sorted" [class.swapping]="swappingIndices.includes(i)">
+                        <span class="cell-index">{{ i }}</span>
+                        <span class="cell-value">{{ array[i] }}</span>
+                    </div>
+                    }
+                </div>
             </div>
         </div>
     </div>
     }
+
+    <!-- OTHER ALGORITHMS: Bar Visualization -->
+    @else {
+    <div class="bars-container">
+        @for (bar of array; track $index; let i = $index) {
+        <div class="bar-wrapper">
+            <div class="bar" [style.height.%]="(bar / maxValue) * 100" [class.comparing]="comparingIndices.includes(i)"
+                [class.swapping]="swappingIndices.includes(i)" [class.sorted]="sortedIndices.includes(i)">
+            </div>
+            @if (array.length <= 50) { <span class="bar-value">{{ bar }}</span>
+                }
+        </div>
+        }
+    </div>
+    }
+
+    <!-- Step Info -->
+    <div class="step-info">
+        <span class="step-counter">Step {{ currentStep }}</span>
+        <span style="margin: 0 10px; color: var(--color-border)">|</span>
+        <span class="step-counter">Comparisons: {{ totalComparisons }}</span>
+        <span style="margin: 0 10px; color: var(--color-border)">|</span>
+        <span class="step-counter">Interchanges: {{ totalInterchanges }}</span>
+    </div>
+    }
+</div>
+
+<!-- Stats Card (shown after completion) -->
+@if (isComplete) {
+<div class="card stats-card">
+    <h3 class="card-title">Results</h3>
+    <div class="stats-grid">
+        <div class="stat-item">
+            <span class="stat-value">{{ totalComparisons }}</span>
+            <span class="stat-label">Comparisons</span>
+        </div>
+        <div class="stat-item">
+            <span class="stat-value">{{ totalInterchanges }}</span>
+            <span class="stat-label">Interchanges</span>
+        </div>
+    </div>
+</div>
+}
 
 </div>
