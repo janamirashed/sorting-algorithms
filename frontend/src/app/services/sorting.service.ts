@@ -1,9 +1,9 @@
-import {Injectable, NgZone} from '@angular/core';
-import {HttpClient} from '@angular/common/http';
-import {Observable} from 'rxjs';
-import {SortingStep} from '../models/sorting-step.model';
-import {ComparisonResult} from '../models/comparison-result.model';
-import {ComparisonRequest} from '../models/comparison-request.model';
+import { Injectable, NgZone } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { Observable } from 'rxjs';
+import { SortingStep } from '../models/sorting-step.model';
+import { ComparisonResult } from '../models/comparison-result.model';
+import { ComparisonRequest } from '../models/comparison-request.model';
 
 @Injectable({
   providedIn: 'root',
@@ -12,7 +12,7 @@ import {ComparisonRequest} from '../models/comparison-request.model';
 export class SortingService {
   private baseUrl = "http://localhost:8080/api";
 
-  constructor(private http: HttpClient, private zone: NgZone) {}
+  constructor(private http: HttpClient, private zone: NgZone) { }
 
   compare(request: ComparisonRequest): Observable<ComparisonResult[]> {
     return this.http.post<ComparisonResult[]>(`${this.baseUrl}/compare`, {
@@ -38,9 +38,13 @@ export class SortingService {
     size: number,
     mode: string,
     speed: number,
-  ) : Observable<SortingStep> {
+    customArray?: number[],
+  ): Observable<SortingStep> {
     return new Observable<SortingStep>((observer) => {
-      const url = `${this.baseUrl}/visualize/${algorithm}?size=${size}&mode=${mode}&speed=${speed}`;
+      let url = `${this.baseUrl}/visualize/${algorithm}?size=${size}&mode=${mode}&speed=${speed}`;
+      if (customArray && customArray.length > 0) {
+        url += `&array=${customArray.join(',')}`;
+      }
       const eventSource = new EventSource(url);
 
       eventSource.onmessage = (event) => {

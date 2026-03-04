@@ -19,8 +19,16 @@ public class VisualizationController {
             @PathVariable String algorithm,
             @RequestParam(defaultValue = "20") int size,
             @RequestParam(defaultValue = "RANDOM") String mode,
-            @RequestParam(defaultValue = "50") int speed) {
+            @RequestParam(defaultValue = "50") int speed,
+            @RequestParam(required = false) String array) {
 
+        if (array != null && !array.isEmpty()) {
+            int[] customArray = java.util.Arrays.stream(array.split(","))
+                    .map(String::trim)
+                    .mapToInt(Integer::parseInt)
+                    .toArray();
+            return visualizationService.streamVisualization(algorithm, customArray, speed);
+        }
         return visualizationService.streamVisualization(algorithm, size, mode, speed);
     }
 }

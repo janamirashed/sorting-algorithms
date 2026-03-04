@@ -54,6 +54,33 @@ public class VisualizationService {
         return emitter;
     }
 
+    public SseEmitter streamVisualization(String algorithmName, int[] customArray, int speed) {
+        SseEmitter emitter = new SseEmitter(Long.MAX_VALUE);
+
+        long delay = Math.max(1, 101 - speed);
+
+        executor.execute(() -> {
+            try {
+                SortingStep initialStep = new SortingStep(
+                        customArray.clone(), -1, -1,
+                        new int[0], 0, 0, 0,
+                        false);
+
+                sendStep(emitter, initialStep, delay);
+
+                SortingStrategy strategy = sortingContext.getStrategy(algorithmName);
+                strategy.sortWithSteps(customArray, step -> sendStep(emitter, step, delay));
+
+                emitter.send(SseEmitter.event().name("COMPLETE").data("Sorting finished"));
+                emitter.complete();
+
+            } catch (Exception e) {
+                emitter.completeWithError(e);
+            }
+        });
+        return emitter;
+    }
+
     private void sendStep(SseEmitter emitter, SortingStep step, long delay) {
         try {
             emitter.send(SseEmitter.event()

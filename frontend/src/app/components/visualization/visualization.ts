@@ -89,7 +89,7 @@ export class Visualization {
     this.isLoadingSteps = false;
 
     this.subscription = this.sortingService
-      .streamVisualization(this.selectedAlgorithm, this.arraySize, this.arrayType, this.speed)
+      .streamVisualization(this.selectedAlgorithm, this.arraySize, this.arrayType, this.speed, this.array)
       .subscribe({
         next: (step) => {
           this.applyStep(step);
@@ -121,7 +121,7 @@ export class Visualization {
     this.stepIndex = -1;
 
     this.subscription = this.sortingService
-      .streamVisualization(this.selectedAlgorithm, this.arraySize, this.arrayType, 100)
+      .streamVisualization(this.selectedAlgorithm, this.arraySize, this.arrayType, 100, this.array)
       .subscribe({
         next: (step) => {
           const processed: SortingStep = {
