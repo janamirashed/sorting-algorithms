@@ -75,7 +75,18 @@ def main():
     ax.set_axisbelow(True)
     for bar in bars:
         height = bar.get_height()
-        ax.annotate(f'{height:.2f}',
+        if height == 0:
+            label = '0.00'
+        elif height < 0.0001:
+            label = f'{height:.6f}'
+        elif height < 0.01:
+            label = f'{height:.4f}'
+        elif height < 0.1:
+            label = f'{height:.3f}'
+        else:
+            label = f'{height:.2f}'
+            
+        ax.annotate(label,
                     xy=(bar.get_x() + bar.get_width() / 2, height),
                     xytext=(0, 5), textcoords="offset points",
                     ha='center', va='bottom', fontsize=9)
