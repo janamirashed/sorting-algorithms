@@ -10,42 +10,54 @@ import java.util.function.Consumer;
 public class HeapSortStrategy implements SortingStrategy {
     @Override
     public SortingResult sort(int[] array) {
+        long[] counters = new long[] { 0, 0 }; // [comparisons, interchanges]
+        long startTime = System.nanoTime();
+
         int n = array.length;
 
         for (int i = n / 2 - 1; i >= 0; i--) {
-            heapify(array, n, i);
+            heapify(array, n, i, counters);
         }
 
         for (int i = n - 1; i > 0; i--) {
             int temp = array[0];
             array[0] = array[i];
             array[i] = temp;
+            counters[1]++;
 
-            heapify(array, i, 0);
+            heapify(array, i, 0, counters);
         }
 
-        return new SortingResult(array, 0, 0, 0);
+        long runtimeNanos = System.nanoTime() - startTime;
+        return new SortingResult(array, counters[0], counters[1], runtimeNanos);
     }
 
-    private void heapify(int[] array, int n, int i) {
+    private void heapify(int[] array, int n, int i, long[] counters) {
         int largest = i;
         int left = 2 * i + 1;
         int right = 2 * i + 2;
 
-        if (left < n && array[left] > array[largest]) {
-            largest = left;
+        if (left < n) {
+            counters[0]++;
+            if (array[left] > array[largest]) {
+                largest = left;
+            }
         }
 
-        if (right < n && array[right] > array[largest]) {
-            largest = right;
+        if (right < n) {
+            counters[0]++;
+            if (array[right] > array[largest]) {
+                largest = right;
+            }
         }
 
         if (largest != i) {
             int temp = array[i];
             array[i] = array[largest];
             array[largest] = temp;
+            counters[1]++;
 
-            heapify(array, n, largest);
+            heapify(array, n, largest, counters);
         }
     }
 

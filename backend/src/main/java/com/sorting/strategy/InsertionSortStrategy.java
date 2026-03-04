@@ -10,18 +10,28 @@ import java.util.function.Consumer;
 public class InsertionSortStrategy implements SortingStrategy {
     @Override
     public SortingResult sort(int[] array) {
+        long comparisons = 0;
+        long interchanges = 0;
+        long startTime = System.nanoTime();
+
         for (int i = 1; i < array.length; i++) {
             int key = array[i];
             int j = i - 1;
 
             while (j >= 0 && array[j] > key) {
+                comparisons++;
                 array[j + 1] = array[j];
+                interchanges++;
                 j--;
+            }
+            if (j >= 0) {
+                comparisons++;
             }
             array[j + 1] = key;
         }
 
-        return new SortingResult(array, 0, 0, 0);
+        long runtimeNanos = System.nanoTime() - startTime;
+        return new SortingResult(array, comparisons, interchanges, runtimeNanos);
     }
 
     @Override

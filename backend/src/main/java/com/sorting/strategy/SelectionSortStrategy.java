@@ -10,9 +10,14 @@ import java.util.function.Consumer;
 public class SelectionSortStrategy implements SortingStrategy {
     @Override
     public SortingResult sort(int[] array) {
+        long comparisons = 0;
+        long interchanges = 0;
+        long startTime = System.nanoTime();
+
         for (int i = 0; i < array.length - 1; i++) {
             int minIndex = i;
             for (int j = i + 1; j < array.length; j++) {
+                comparisons++;
                 if (array[j] < array[minIndex]) {
                     minIndex = j;
                 }
@@ -21,8 +26,11 @@ public class SelectionSortStrategy implements SortingStrategy {
             int temp = array[minIndex];
             array[minIndex] = array[i];
             array[i] = temp;
+            interchanges++;
         }
-        return new SortingResult(array, 0, 0, 0);
+
+        long runtimeNanos = System.nanoTime() - startTime;
+        return new SortingResult(array, comparisons, interchanges, runtimeNanos);
     }
 
     @Override

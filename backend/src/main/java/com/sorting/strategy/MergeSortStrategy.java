@@ -10,10 +10,19 @@ import java.util.function.Consumer;
 public class MergeSortStrategy implements SortingStrategy {
     @Override
     public SortingResult sort(int[] array) {
-        int n = array.length;
+        long[] counters = new long[] { 0, 0 }; // [comparisons, interchanges]
+        long startTime = System.nanoTime();
 
+        mergeSort(array, counters);
+
+        long runtimeNanos = System.nanoTime() - startTime;
+        return new SortingResult(array, counters[0], counters[1], runtimeNanos);
+    }
+
+    private void mergeSort(int[] array, long[] counters) {
+        int n = array.length;
         if (n < 2) {
-            return new SortingResult(array, 0, 0, 0);
+            return;
         }
 
         int midIdx = n / 2;
@@ -27,19 +36,19 @@ public class MergeSortStrategy implements SortingStrategy {
             rightHalf[i - midIdx] = array[i];
         }
 
-        sort(leftHalf);
-        sort(rightHalf);
-        merge(array, leftHalf, rightHalf);
-        return new SortingResult(array, 0, 0, 0);
+        mergeSort(leftHalf, counters);
+        mergeSort(rightHalf, counters);
+        merge(array, leftHalf, rightHalf, counters);
     }
 
-    private void merge(int[] array, int[] leftHalf, int[] rightHalf) {
+    private void merge(int[] array, int[] leftHalf, int[] rightHalf, long[] counters) {
         int leftSize = leftHalf.length;
         int rightSize = rightHalf.length;
 
         int i = 0, j = 0, k = 0;
 
         while (i < leftSize && j < rightSize) {
+            counters[0]++; // comparison
             if (leftHalf[i] <= rightHalf[j]) {
                 array[k] = leftHalf[i];
                 i++;
@@ -47,17 +56,20 @@ public class MergeSortStrategy implements SortingStrategy {
                 array[k] = rightHalf[j];
                 j++;
             }
+            counters[1]++; // interchange
             k++;
         }
 
         while (i < leftSize) {
             array[k] = leftHalf[i];
+            counters[1]++;
             i++;
             k++;
         }
 
         while (j < rightSize) {
             array[k] = rightHalf[j];
+            counters[1]++;
             j++;
             k++;
         }

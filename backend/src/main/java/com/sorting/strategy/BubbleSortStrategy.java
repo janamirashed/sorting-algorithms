@@ -10,21 +10,28 @@ import java.util.function.Consumer;
 public class BubbleSortStrategy implements SortingStrategy {
     @Override
     public SortingResult sort(int[] array) {
+        long comparisons = 0;
+        long interchanges = 0;
+        long startTime = System.nanoTime();
+
         boolean isSwaped = true;
 
         while (isSwaped) {
             isSwaped = false;
             for (int i = 0; i < array.length - 1; i++) {
+                comparisons++;
                 if (array[i] > array[i + 1]) {
                     isSwaped = true;
                     int temp = array[i];
                     array[i] = array[i + 1];
                     array[i + 1] = temp;
+                    interchanges++;
                 }
             }
         }
 
-        return new SortingResult(array, 0, 0, 0);
+        long runtimeNanos = System.nanoTime() - startTime;
+        return new SortingResult(array, comparisons, interchanges, runtimeNanos);
     }
 
     @Override

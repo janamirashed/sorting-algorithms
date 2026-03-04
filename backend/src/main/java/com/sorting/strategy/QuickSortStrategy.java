@@ -10,11 +10,16 @@ import java.util.function.Consumer;
 public class QuickSortStrategy implements SortingStrategy {
     @Override
     public SortingResult sort(int[] array) {
-        quickSort(array, 0, array.length - 1);
-        return new SortingResult(array, 0, 0, 0);
+        long[] counters = new long[] { 0, 0 }; // [comparisons, interchanges]
+        long startTime = System.nanoTime();
+
+        quickSort(array, 0, array.length - 1, counters);
+
+        long runtimeNanos = System.nanoTime() - startTime;
+        return new SortingResult(array, counters[0], counters[1], runtimeNanos);
     }
 
-    private void quickSort(int[] array, int lowIdx, int highIdx) {
+    private void quickSort(int[] array, int lowIdx, int highIdx, long[] counters) {
         if (lowIdx >= highIdx) {
             return;
         }
@@ -25,23 +30,29 @@ public class QuickSortStrategy implements SortingStrategy {
 
         while (leftPtr < rightPtr) {
             while (array[leftPtr] <= pivot && leftPtr < rightPtr) {
+                counters[0]++;
                 leftPtr++;
             }
             while (array[rightPtr] >= pivot && leftPtr < rightPtr) {
+                counters[0]++;
                 rightPtr--;
             }
 
-            int temp = array[leftPtr];
-            array[leftPtr] = array[rightPtr];
-            array[rightPtr] = temp;
+            if (leftPtr < rightPtr) {
+                int temp = array[leftPtr];
+                array[leftPtr] = array[rightPtr];
+                array[rightPtr] = temp;
+                counters[1]++;
+            }
         }
 
         int temp = array[leftPtr];
         array[leftPtr] = array[highIdx];
         array[highIdx] = temp;
+        counters[1]++;
 
-        quickSort(array, lowIdx, leftPtr - 1);
-        quickSort(array, leftPtr + 1, highIdx);
+        quickSort(array, lowIdx, leftPtr - 1, counters);
+        quickSort(array, leftPtr + 1, highIdx, counters);
     }
 
     @Override
