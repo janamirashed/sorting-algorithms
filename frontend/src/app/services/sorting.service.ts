@@ -23,10 +23,10 @@ export class SortingService {
     });
   }
 
-  compareWithFile(file: File, algorithmNames: string[], numberOfRuns: number):
+  compareWithFiles(files: File[], algorithmNames: string[], numberOfRuns: number):
     Observable<ComparisonResult[]> {
-    const formData = new FormData()
-    formData.append('file', file);
+    const formData = new FormData();
+    files.forEach(file => formData.append('files', file));
     algorithmNames.forEach(name => formData.append('algorithmNames', name));
     formData.append('numberOfRuns', numberOfRuns.toString());
 

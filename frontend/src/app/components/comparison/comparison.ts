@@ -23,7 +23,7 @@ export class Comparison {
   arrayType: string = 'RANDOM';
   arraySize: number = 1000;
   numberOfRuns: number = 5;
-  selectedFile: File | null = null;
+  selectedFiles: File[] = [];
   results: ComparisonResult[] = [];
   chartImages: { [key: string]: string } = {};
   isGeneratingCharts: boolean = false;
@@ -42,14 +42,18 @@ export class Comparison {
   onFileSelected(event: Event): void {
     const input = event.target as HTMLInputElement;
     if (input.files && input.files.length > 0) {
-      this.selectedFile = input.files[0];
+      this.selectedFiles = Array.from(input.files);
     }
   }
 
+  getFileNames(): string {
+    return this.selectedFiles.map(f => f.name).join(', ');
+  }
+
   runComparison(): void {
-    if (this.selectedFile) {
-      this.sortingService.compareWithFile(
-        this.selectedFile,
+    if (this.selectedFiles.length > 0) {
+      this.sortingService.compareWithFiles(
+        this.selectedFiles,
         this.selectedAlgorithms,
         this.numberOfRuns
       ).subscribe({
@@ -77,7 +81,7 @@ export class Comparison {
 
   clearResults(): void {
     this.results = [];
-    this.selectedFile = null;
+    this.selectedFiles = [];
     this.chartImages = {};
   }
 

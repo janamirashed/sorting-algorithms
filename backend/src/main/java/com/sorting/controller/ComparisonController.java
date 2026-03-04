@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -34,7 +35,7 @@ public class ComparisonController {
     }
 
     @PostMapping("/file")
-    public ResponseEntity<List<ComparisonResult>> compareWithFile(@RequestParam("file") MultipartFile file,
+    public ResponseEntity<List<ComparisonResult>> compareWithFile(@RequestParam("files") MultipartFile[] files,
             @RequestParam("algorithmNames") List<String> algorithmNames,
             @RequestParam("numberOfRuns") int numberOfRuns) {
         if (algorithmNames == null || algorithmNames.isEmpty()) {
@@ -42,9 +43,13 @@ public class ComparisonController {
         }
 
         try {
-            List<ComparisonResult> results = comparisonService.compareWithFile(
-                    file, algorithmNames, numberOfRuns);
-            return ResponseEntity.ok(results);
+            List<ComparisonResult> allResults = new ArrayList<>();
+            for (MultipartFile file : files) {
+                List<ComparisonResult> results = comparisonService.compareWithFile(
+                        file, algorithmNames, numberOfRuns);
+                allResults.addAll(results);
+            }
+            return ResponseEntity.ok(allResults);
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.badRequest().build();

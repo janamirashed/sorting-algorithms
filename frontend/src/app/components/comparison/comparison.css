@@ -77,6 +77,12 @@
     color: var(--color-primary);
 }
 
+.file-list {
+    margin-top: 6px;
+    color: var(--color-text-secondary);
+    font-size: 0.78rem;
+}
+
 .controls-actions {
     display: flex;
     gap: 12px;

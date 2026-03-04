@@ -52,8 +52,14 @@
 
             <!-- File Upload -->
             <div class="control-group">
-                <label class="form-label">Or Upload File (.txt)</label>
-                <input type="file" class="form-input file-input" accept=".txt" (change)="onFileSelected($event)" />
+                <label class="form-label">Or Upload Files (.txt)</label>
+                <input type="file" class="form-input file-input" accept=".txt" multiple
+                    (change)="onFileSelected($event)" />
+                @if (selectedFiles.length > 0) {
+                <div class="file-list">
+                    <small>{{ selectedFiles.length }} file(s) selected: {{ getFileNames() }}</small>
+                </div>
+                }
             </div>
 
         </div>
