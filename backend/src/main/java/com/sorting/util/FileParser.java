@@ -12,17 +12,17 @@ import java.util.Arrays;
 public class FileParser {
     public int[] parseFile(MultipartFile file) throws IOException {
         BufferedReader reader = new BufferedReader(
-                new InputStreamReader(file.getInputStream())
-        );
+                new InputStreamReader(file.getInputStream()));
 
         StringBuilder content = new StringBuilder();
         String line;
-        while((line = reader.readLine()) != null) {
+        while ((line = reader.readLine()) != null) {
             content.append(line).append(" ");
         }
         reader.close();
 
-        return Arrays.stream(content.toString().trim().split("[,\\s]+"))
+        // Remove brackets if they exist and split the string
+        return Arrays.stream(content.toString().replaceAll("[\\[\\]]", "").trim().split("[,\\s]+"))
                 .filter(s -> !s.isEmpty())
                 .mapToInt(Integer::parseInt)
                 .toArray();

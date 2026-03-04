@@ -42,6 +42,7 @@ public class ComparisonController {
                     file, algorithmNames, numberOfRuns);
             return ResponseEntity.ok(results);
         } catch (Exception e) {
+            e.printStackTrace();
             return ResponseEntity.badRequest().build();
         }
     }

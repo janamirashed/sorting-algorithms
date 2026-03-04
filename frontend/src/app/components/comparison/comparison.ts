@@ -1,5 +1,5 @@
-import { Component } from '@angular/core';
-import {FormBuilder, FormsModule} from '@angular/forms';
+import { Component, ChangeDetectorRef } from '@angular/core';
+import { FormBuilder, FormsModule } from '@angular/forms';
 import { ComparisonResult } from '../../models/comparison-result.model';
 import { SortingService } from '../../services/sorting.service';
 
@@ -26,7 +26,7 @@ export class Comparison {
   selectedFile: File | null = null;
   results: ComparisonResult[] = [];
 
-  constructor(private sortingService: SortingService) {}
+  constructor(private sortingService: SortingService, private cdr: ChangeDetectorRef) { }
 
   toggleAlgorithm(algo: string): void {
     const index = this.selectedAlgorithms.indexOf(algo);
@@ -51,7 +51,10 @@ export class Comparison {
         this.selectedAlgorithms,
         this.numberOfRuns
       ).subscribe({
-        next: data => this.results = data,
+        next: data => {
+          this.results = data;
+          this.cdr.detectChanges();
+        },
         error: (err) => console.error('Comparison failed:', err),
       });
     } else {
@@ -61,7 +64,10 @@ export class Comparison {
         generationMode: this.arrayType,
         numberOfRuns: this.numberOfRuns,
       }).subscribe({
-        next: data => this.results = data,
+        next: data => {
+          this.results = data;
+          this.cdr.detectChanges();
+        },
         error: (err) => console.error('Comparison failed:', err),
       });
     }

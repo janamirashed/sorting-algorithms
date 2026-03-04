@@ -38,8 +38,7 @@ public class VisualizationService {
                 SortingStep initialStep = new SortingStep(
                         initialArray, -1, -1,
                         new int[0], 0, 0, 0,
-                        false
-                );
+                        false);
 
                 sendStep(emitter, initialStep, delay);
 
