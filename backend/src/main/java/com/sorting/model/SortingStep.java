@@ -9,9 +9,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class SortingStep {
     private int[] array;
-    private int comparingIndcies;
-    private int swappingIndcies;
-    private int[] sortedIndcies;
+    private int comparingIndices;
+    private int swappingIndices;
+    private int[] sortedIndices;
     private int stepNumber;
     private long totalComparisons;
     private long totalInterchanges;
