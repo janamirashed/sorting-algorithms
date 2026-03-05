@@ -7,4 +7,12 @@ export interface SortingStep {
   totalComparisons: number;
   totalInterchanges: number;
   isComplete: boolean;
+
+  // Merge sort specific fields
+  mergeRangeStart?: number;
+  mergeRangeEnd?: number;
+  midPoint?: number;
+  leftPointer?: number;
+  rightPointer?: number;
+  writePointer?: number;
 }

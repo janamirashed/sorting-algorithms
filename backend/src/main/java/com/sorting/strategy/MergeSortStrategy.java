@@ -77,7 +77,7 @@ public class MergeSortStrategy implements SortingStrategy {
 
     @Override
     public void sortWithSteps(int[] array, Consumer<SortingStep> stepConsumer) {
-        int[] counters = new int[] { 0, 0, 0 };
+        int[] counters = new int[] { 0, 0, 0 }; // [stepNumber, comparisons, interchanges]
 
         mergeSortWithSteps(array, 0, array.length - 1, stepConsumer, counters);
         stepConsumer.accept(new SortingStep(
@@ -110,10 +110,13 @@ public class MergeSortStrategy implements SortingStrategy {
         int i = 0, j = 0, k = left;
 
         while (i < n1 && j < n2) {
-            counters[1]++;
+            counters[1]++; // comparison
 
+            // Step: comparing left[i] vs right[j]
             stepConsumer.accept(new SortingStep(
-                    array.clone(), left + i, mid + 1 + j, new int[0], ++counters[0], counters[1], counters[2], false));
+                    array.clone(), left + i, mid + 1 + j, new int[0],
+                    ++counters[0], counters[1], counters[2], false,
+                    left, right, mid, left + i, mid + 1 + j, k));
 
             if (leftArr[i] <= rightArr[j]) {
                 array[k] = leftArr[i];
@@ -122,10 +125,13 @@ public class MergeSortStrategy implements SortingStrategy {
                 array[k] = rightArr[j];
                 j++;
             }
-            counters[2]++;
+            counters[2]++; // interchange
 
+            // Step: element placed at write position k
             stepConsumer.accept(new SortingStep(
-                    array.clone(), k, -1, new int[0], ++counters[0], counters[1], counters[2], false));
+                    array.clone(), k, -1, new int[0],
+                    ++counters[0], counters[1], counters[2], false,
+                    left, right, mid, left + i, mid + 1 + j, k));
 
             k++;
         }
@@ -135,7 +141,9 @@ public class MergeSortStrategy implements SortingStrategy {
             counters[2]++;
 
             stepConsumer.accept(new SortingStep(
-                    array.clone(), k, -1, new int[0], ++counters[0], counters[1], counters[2], false));
+                    array.clone(), k, -1, new int[0],
+                    ++counters[0], counters[1], counters[2], false,
+                    left, right, mid, left + i, -1, k));
 
             i++;
             k++;
@@ -146,7 +154,9 @@ public class MergeSortStrategy implements SortingStrategy {
             counters[2]++;
 
             stepConsumer.accept(new SortingStep(
-                    array.clone(), k, -1, new int[0], ++counters[0], counters[1], counters[2], false));
+                    array.clone(), k, -1, new int[0],
+                    ++counters[0], counters[1], counters[2], false,
+                    left, right, mid, -1, mid + 1 + j, k));
 
             j++;
             k++;

@@ -118,8 +118,114 @@
         </div>
         } @else {
 
+        <!-- MERGE SORT: Tree Visualization -->
+        @if (isMergeSort) {
+        <div class="merge-tree-visualization-wrapper">
+
+            <!-- Legend -->
+            <div class="merge-legend">
+                <div class="legend-item">
+                    <span class="legend-swatch legend-left"></span>
+                    <span class="legend-text">Left half</span>
+                </div>
+                <div class="legend-item">
+                    <span class="legend-swatch legend-right"></span>
+                    <span class="legend-text">Right half</span>
+                </div>
+                <div class="legend-item">
+                    <span class="legend-swatch legend-write"></span>
+                    <span class="legend-text">Write position</span>
+                </div>
+                <div class="legend-item">
+                    <span class="legend-swatch legend-merged"></span>
+                    <span class="legend-text">Merged</span>
+                </div>
+            </div>
+
+            <!-- Tree View -->
+            <div class="merge-tree-container">
+                <svg [attr.width]="mergeSvgWidth" [attr.height]="mergeSvgHeight" class="merge-tree-svg">
+                    <!-- Edges -->
+                    @for (edge of mergeTreeEdges; track $index) {
+                    <line [attr.x1]="edge.x1" [attr.y1]="edge.y1"
+                          [attr.x2]="edge.x2" [attr.y2]="edge.y2"
+                          [class.merge-edge-active]="edge.active"
+                          class="merge-tree-edge" />
+                    }
+
+                    <!-- Nodes -->
+                    @for (node of mergeTreeNodes; track node.id) {
+                    <g class="merge-tree-node-group">
+                        <!-- Node background box -->
+                        <rect [attr.x]="node.x" [attr.y]="node.y"
+                              [attr.width]="node.width" [attr.height]="mergeNodeHeight"
+                              [attr.rx]="6" [attr.ry]="6"
+                              [class]="getMergeNodeClass(node)" />
+
+                        <!-- Individual cells inside the node -->
+                        @for (val of node.values; track $index; let i = $index) {
+                        <rect [attr.x]="node.x + 6 + i * (mergeCellWidth + 2)"
+                              [attr.y]="node.y + 2"
+                              [attr.width]="mergeCellWidth"
+                              [attr.height]="mergeNodeHeight - 4"
+                              [attr.rx]="4" [attr.ry]="4"
+                              [class]="getMergeCellClass(node, i)" />
+                        <text [attr.x]="node.x + 6 + i * (mergeCellWidth + 2) + mergeCellWidth / 2"
+                              [attr.y]="node.y + mergeNodeHeight / 2"
+                              class="merge-cell-text"
+                              dominant-baseline="central" text-anchor="middle">
+                            {{ val }}
+                        </text>
+                        }
+
+                        <!-- Range label below the node -->
+                        <text [attr.x]="node.x + node.width / 2"
+                              [attr.y]="node.y + mergeNodeHeight + 13"
+                              class="merge-range-label"
+                              dominant-baseline="central" text-anchor="middle">
+                            [{{ node.left }}..{{ node.right }}]
+                        </text>
+                    </g>
+                    }
+                </svg>
+            </div>
+
+            <!-- Bar representation with merge range highlight below -->
+            <div class="merge-bars-section">
+                <span class="merge-bars-label">Current Array State</span>
+                <div class="merge-bars-container">
+                    @for (bar of array; track $index; let i = $index) {
+                    <div class="merge-bar-wrapper">
+                        <div class="merge-bar"
+                             [style.height.%]="(bar / maxValue) * 100"
+                             [class.in-merge-range]="isInMergeRange(i)"
+                             [class.left-half]="isInLeftHalf(i) && !isMergeWritePointer(i)"
+                             [class.right-half]="isInRightHalf(i) && !isMergeWritePointer(i)"
+                             [class.write-pos]="isMergeWritePointer(i)"
+                             [class.sorted]="isComplete">
+                        </div>
+                        @if (array.length <= 30) {
+                        <span class="merge-bar-value">{{ bar }}</span>
+                        }
+                        <!-- Pointer labels -->
+                        @if (isMergeLeftPointer(i)) {
+                        <span class="pointer-label pointer-l">L</span>
+                        }
+                        @if (isMergeRightPointer(i)) {
+                        <span class="pointer-label pointer-r">R</span>
+                        }
+                        @if (isMergeWritePointer(i)) {
+                        <span class="pointer-label pointer-w">W</span>
+                        }
+                    </div>
+                    }
+                </div>
+            </div>
+        </div>
+        }
+
         <!-- HEAP SORT: Tree Visualization -->
-        @if (isHeapSort) {
+        @else if (isHeapSort) {
         <div class="tree-visualization-wrapper">
             <!-- Tree View -->
             <div class="tree-container">

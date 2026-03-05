@@ -20,6 +20,27 @@ interface TreeEdge {
   y2: number;
 }
 
+// Merge tree types
+interface MergeTreeNode {
+  id: string;
+  left: number;
+  right: number;
+  values: number[];
+  x: number;
+  y: number;
+  width: number;
+  state: 'idle' | 'splitting' | 'merging-left' | 'merging-right' | 'merged';
+  children: [MergeTreeNode | null, MergeTreeNode | null];
+}
+
+interface MergeTreeEdge {
+  x1: number;
+  y1: number;
+  x2: number;
+  y2: number;
+  active: boolean;
+}
+
 @Component({
   selector: 'app-visualization',
   imports: [FormsModule],
@@ -58,12 +79,29 @@ export class Visualization {
   swappingIndices: number[] = [];
   sortedIndices: number[] = [];
 
-  // Tree visualization
+  // Tree visualization (heap sort)
   treeNodes: TreeNode[] = [];
   treeEdges: TreeEdge[] = [];
   treeSvgWidth: number = 800;
   treeSvgHeight: number = 400;
   nodeRadius: number = 22;
+
+  // Merge sort tree visualization
+  mergeTreeRoot: MergeTreeNode | null = null;
+  mergeTreeNodes: MergeTreeNode[] = [];
+  mergeTreeEdges: MergeTreeEdge[] = [];
+  mergeSvgWidth: number = 900;
+  mergeSvgHeight: number = 500;
+  mergeNodeHeight: number = 36;
+  mergeCellWidth: number = 32;
+
+  // Current merge state
+  mergeRangeStart: number = -1;
+  mergeRangeEnd: number = -1;
+  midPoint: number = -1;
+  leftPointer: number = -1;
+  rightPointer: number = -1;
+  writePointer: number = -1;
 
   // Step-through state
   private steps: SortingStep[] = [];
@@ -76,6 +114,10 @@ export class Visualization {
 
   get isHeapSort(): boolean {
     return this.selectedAlgorithm === 'Heap Sort';
+  }
+
+  get isMergeSort(): boolean {
+    return this.selectedAlgorithm === 'Merge Sort';
   }
 
   onGenerate(): void {
@@ -103,8 +145,20 @@ export class Visualization {
     this.isLoadingSteps = false;
     this.currentHeapSize = this.array.length;
 
+    // Reset merge sort state
+    this.mergeRangeStart = -1;
+    this.mergeRangeEnd = -1;
+    this.midPoint = -1;
+    this.leftPointer = -1;
+    this.rightPointer = -1;
+    this.writePointer = -1;
+
     if (this.isHeapSort) {
       this.computeTreeLayout();
+    }
+
+    if (this.isMergeSort) {
+      this.buildMergeTree();
     }
   }
 
@@ -172,6 +226,13 @@ export class Visualization {
             totalComparisons: step.totalComparisons,
             totalInterchanges: step.totalInterchanges,
             isComplete: (step as any).complete || step.isComplete,
+            // Merge sort fields
+            mergeRangeStart: step.mergeRangeStart,
+            mergeRangeEnd: step.mergeRangeEnd,
+            midPoint: step.midPoint,
+            leftPointer: step.leftPointer,
+            rightPointer: step.rightPointer,
+            writePointer: step.writePointer,
           };
           this.steps.push(processed);
 
@@ -229,6 +290,18 @@ export class Visualization {
       this.computeTreeLayout();
     }
 
+    // Merge sort: update merge state and tree
+    if (this.isMergeSort) {
+      this.mergeRangeStart = step.mergeRangeStart ?? -1;
+      this.mergeRangeEnd = step.mergeRangeEnd ?? -1;
+      this.midPoint = step.midPoint ?? -1;
+      this.leftPointer = step.leftPointer ?? -1;
+      this.rightPointer = step.rightPointer ?? -1;
+      this.writePointer = step.writePointer ?? -1;
+
+      this.updateMergeTreeState();
+    }
+
     this.cdr.detectChanges();
   }
 
@@ -239,7 +312,295 @@ export class Visualization {
     this.onGenerate();
   }
 
-  // ─── Tree Layout Computation ───────────────────────────────────────────
+  // ─── Merge Sort Tree ─────────────────────────────────────────────────
+
+  buildMergeTree(): void {
+    if (this.array.length === 0) return;
+
+    this.mergeTreeRoot = this.buildMergeTreeNode(0, this.array.length - 1);
+    this.layoutMergeTree();
+  }
+
+  private buildMergeTreeNode(left: number, right: number): MergeTreeNode {
+    const values = this.array.slice(left, right + 1);
+    const node: MergeTreeNode = {
+      id: `${left}-${right}`,
+      left,
+      right,
+      values,
+      x: 0,
+      y: 0,
+      width: 0,
+      state: 'idle',
+      children: [null, null],
+    };
+
+    if (left < right) {
+      const mid = left + Math.floor((right - left) / 2);
+      node.children[0] = this.buildMergeTreeNode(left, mid);
+      node.children[1] = this.buildMergeTreeNode(mid + 1, right);
+    }
+
+    return node;
+  }
+
+  private layoutMergeTree(): void {
+    if (!this.mergeTreeRoot) return;
+
+    const depth = this.getMergeTreeDepth(this.mergeTreeRoot);
+    const verticalSpacing = 80;
+    const topPadding = 30;
+
+    // Calculate cell size based on array length
+    const n = this.array.length;
+    if (n <= 8) {
+      this.mergeCellWidth = 36;
+    } else if (n <= 16) {
+      this.mergeCellWidth = 30;
+    } else if (n <= 32) {
+      this.mergeCellWidth = 24;
+    } else {
+      this.mergeCellWidth = 18;
+    }
+
+    this.mergeNodeHeight = this.mergeCellWidth + 4;
+
+    // Step 1: compute subtree widths bottom-up
+    this.computeSubtreeWidth(this.mergeTreeRoot);
+
+    this.mergeSvgWidth = Math.max(600, (this.mergeTreeRoot as any)._subtreeWidth + 60);
+    this.mergeSvgHeight = depth * verticalSpacing + topPadding + 40;
+
+    // Step 2: position nodes top-down using subtree widths
+    this.mergeTreeNodes = [];
+    this.mergeTreeEdges = [];
+
+    this.positionMergeNode(this.mergeTreeRoot, 0, this.mergeSvgWidth / 2, topPadding, verticalSpacing);
+  }
+
+  /** Bottom-up: compute how much horizontal space each subtree needs */
+  private computeSubtreeWidth(node: MergeTreeNode): number {
+    const cellCount = node.right - node.left + 1;
+    const nodeWidth = cellCount * this.mergeCellWidth + (cellCount - 1) * 2 + 12;
+
+    if (!node.children[0] && !node.children[1]) {
+      // Leaf — subtree width = this node's width
+      (node as any)._subtreeWidth = nodeWidth;
+      return nodeWidth;
+    }
+
+    const gap = 24;
+    const leftSubtreeW = node.children[0] ? this.computeSubtreeWidth(node.children[0]) : 0;
+    const rightSubtreeW = node.children[1] ? this.computeSubtreeWidth(node.children[1]) : 0;
+    const childrenTotalW = leftSubtreeW + gap + rightSubtreeW;
+
+    // Subtree width = max(this node's own width, children's combined width)
+    (node as any)._subtreeWidth = Math.max(nodeWidth, childrenTotalW);
+    return (node as any)._subtreeWidth;
+  }
+
+  private positionMergeNode(
+    node: MergeTreeNode,
+    level: number,
+    centerX: number,
+    y: number,
+    verticalSpacing: number
+  ): void {
+    const cellCount = node.right - node.left + 1;
+    node.width = cellCount * this.mergeCellWidth + (cellCount - 1) * 2 + 12;
+    node.x = centerX - node.width / 2;
+    node.y = y;
+
+    this.mergeTreeNodes.push(node);
+
+    const childY = y + verticalSpacing;
+
+    if (node.children[0] && node.children[1]) {
+      const leftChild = node.children[0];
+      const rightChild = node.children[1];
+
+      const gap = 24;
+      const leftSubW: number = (leftChild as any)._subtreeWidth;
+      const rightSubW: number = (rightChild as any)._subtreeWidth;
+      const totalChildrenW = leftSubW + gap + rightSubW;
+
+      // Center children within the parent's subtree space
+      const leftCenterX = centerX - totalChildrenW / 2 + leftSubW / 2;
+      const rightCenterX = centerX + totalChildrenW / 2 - rightSubW / 2;
+
+      this.positionMergeNode(leftChild, level + 1, leftCenterX, childY, verticalSpacing);
+      this.positionMergeNode(rightChild, level + 1, rightCenterX, childY, verticalSpacing);
+
+      // Edges from parent to children
+      const parentBottomY = node.y + this.mergeNodeHeight;
+      this.mergeTreeEdges.push({
+        x1: centerX,
+        y1: parentBottomY,
+        x2: leftCenterX,
+        y2: childY,
+        active: false,
+      });
+      this.mergeTreeEdges.push({
+        x1: centerX,
+        y1: parentBottomY,
+        x2: rightCenterX,
+        y2: childY,
+        active: false,
+      });
+    }
+  }
+
+  private getMergeTreeDepth(node: MergeTreeNode): number {
+    if (!node.children[0] && !node.children[1]) return 1;
+    const leftDepth = node.children[0] ? this.getMergeTreeDepth(node.children[0]) : 0;
+    const rightDepth = node.children[1] ? this.getMergeTreeDepth(node.children[1]) : 0;
+    return 1 + Math.max(leftDepth, rightDepth);
+  }
+
+  private updateMergeTreeState(): void {
+    if (!this.mergeTreeRoot) return;
+
+    // Update values in all nodes from the current array state
+    this.updateNodeValues(this.mergeTreeRoot);
+
+    // Reset all node states
+    this.resetMergeTreeState(this.mergeTreeRoot);
+
+    // Mark edge activity
+    for (const edge of this.mergeTreeEdges) {
+      edge.active = false;
+    }
+
+    // If we have a merge range, highlight the relevant nodes
+    if (this.mergeRangeStart >= 0 && this.mergeRangeEnd >= 0 && this.midPoint >= 0) {
+      this.highlightMergeNodes(this.mergeTreeRoot);
+    }
+
+    // If complete, mark all nodes as merged
+    if (this.isComplete) {
+      this.markAllMerged(this.mergeTreeRoot);
+    }
+  }
+
+  private updateNodeValues(node: MergeTreeNode): void {
+    node.values = this.array.slice(node.left, node.right + 1);
+    if (node.children[0]) this.updateNodeValues(node.children[0]);
+    if (node.children[1]) this.updateNodeValues(node.children[1]);
+  }
+
+  private resetMergeTreeState(node: MergeTreeNode): void {
+    node.state = 'idle';
+    if (node.children[0]) this.resetMergeTreeState(node.children[0]);
+    if (node.children[1]) this.resetMergeTreeState(node.children[1]);
+  }
+
+  private highlightMergeNodes(node: MergeTreeNode): void {
+    // The parent node being merged into
+    if (node.left === this.mergeRangeStart && node.right === this.mergeRangeEnd) {
+      node.state = 'merging-left'; // parent is receiving merged elements
+      // Highlight edges to this node's children
+      for (const edge of this.mergeTreeEdges) {
+        if (node.children[0] && node.children[1]) {
+          const leftChild = node.children[0];
+          const rightChild = node.children[1];
+          const parentCenterX = node.x + node.width / 2;
+
+          const leftCellCount = leftChild.right - leftChild.left + 1;
+          const leftWidth = leftCellCount * this.mergeCellWidth + (leftCellCount - 1) * 2 + 12;
+          const leftCenterX = leftChild.x + leftWidth / 2;
+
+          const rightCellCount = rightChild.right - rightChild.left + 1;
+          const rightWidth = rightCellCount * this.mergeCellWidth + (rightCellCount - 1) * 2 + 12;
+          const rightCenterX = rightChild.x + rightWidth / 2;
+
+          // Check if edge goes from this parent to either child
+          if (Math.abs(edge.x1 - parentCenterX) < 2) {
+            if (Math.abs(edge.x2 - leftCenterX) < 2 || Math.abs(edge.x2 - rightCenterX) < 2) {
+              edge.active = true;
+            }
+          }
+        }
+      }
+    }
+
+    // Left child subarray
+    if (node.left === this.mergeRangeStart && node.right === this.midPoint) {
+      node.state = 'merging-left';
+    }
+
+    // Right child subarray
+    if (node.left === this.midPoint + 1 && node.right === this.mergeRangeEnd) {
+      node.state = 'merging-right';
+    }
+
+    if (node.children[0]) this.highlightMergeNodes(node.children[0]);
+    if (node.children[1]) this.highlightMergeNodes(node.children[1]);
+  }
+
+  private markAllMerged(node: MergeTreeNode): void {
+    node.state = 'merged';
+    if (node.children[0]) this.markAllMerged(node.children[0]);
+    if (node.children[1]) this.markAllMerged(node.children[1]);
+  }
+
+  // Helper to check if an index is the left pointer
+  isMergeLeftPointer(globalIndex: number): boolean {
+    return this.leftPointer >= 0 && globalIndex === this.leftPointer;
+  }
+
+  // Helper to check if an index is the right pointer
+  isMergeRightPointer(globalIndex: number): boolean {
+    return this.rightPointer >= 0 && globalIndex === this.rightPointer;
+  }
+
+  // Helper to check if an index is the write pointer
+  isMergeWritePointer(globalIndex: number): boolean {
+    return this.writePointer >= 0 && globalIndex === this.writePointer;
+  }
+
+  // Check if an index is in the current merge range
+  isInMergeRange(index: number): boolean {
+    return this.mergeRangeStart >= 0 && index >= this.mergeRangeStart && index <= this.mergeRangeEnd;
+  }
+
+  // Check if an index is in the left half of the merge
+  isInLeftHalf(index: number): boolean {
+    return this.mergeRangeStart >= 0 && this.midPoint >= 0 &&
+      index >= this.mergeRangeStart && index <= this.midPoint;
+  }
+
+  // Check if an index is in the right half of the merge
+  isInRightHalf(index: number): boolean {
+    return this.midPoint >= 0 && this.mergeRangeEnd >= 0 &&
+      index > this.midPoint && index <= this.mergeRangeEnd;
+  }
+
+  // Get CSS class for a merge tree node
+  getMergeNodeClass(node: MergeTreeNode): string {
+    const classes = ['merge-tree-node-box'];
+    if (node.state !== 'idle') {
+      classes.push('merge-' + node.state);
+    }
+    return classes.join(' ');
+  }
+
+  // Get CSS class for a cell inside a merge tree node
+  getMergeCellClass(node: MergeTreeNode, localIndex: number): string {
+    const globalIndex = node.left + localIndex;
+    const classes = ['merge-cell'];
+
+    if (this.isMergeWritePointer(globalIndex) && node.left === this.mergeRangeStart && node.right === this.mergeRangeEnd) {
+      classes.push('write-target');
+    } else if (this.isMergeLeftPointer(globalIndex)) {
+      classes.push('left-pointer');
+    } else if (this.isMergeRightPointer(globalIndex)) {
+      classes.push('right-pointer');
+    }
+
+    return classes.join(' ');
+  }
+
+  // ─── Heap Sort Tree Layout Computation ───────────────────────────────
 
   computeTreeLayout(): void {
     const totalN = this.array.length;

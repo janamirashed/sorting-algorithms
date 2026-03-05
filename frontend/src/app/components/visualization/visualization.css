@@ -251,6 +251,277 @@
     user-select: none;
 }
 
+/* ── MERGE SORT TREE VISUALIZATION ───────────────── */
+
+.merge-tree-visualization-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+/* Legend */
+.merge-legend {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    flex-wrap: wrap;
+    padding: 8px 12px;
+    background: rgba(0, 0, 0, 0.02);
+    border-radius: var(--radius-md);
+    border: 1px solid var(--color-border);
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.legend-swatch {
+    width: 14px;
+    height: 14px;
+    border-radius: 4px;
+    border: 1.5px solid rgba(0, 0, 0, 0.1);
+}
+
+.legend-left {
+    background: #D4EFFF;
+    border-color: #4AA3DF;
+}
+
+.legend-right {
+    background: #FFE8D6;
+    border-color: #E8A34A;
+}
+
+.legend-write {
+    background: #E8D6FF;
+    border-color: #8B5CF6;
+}
+
+.legend-merged {
+    background: #D0F0E0;
+    border-color: var(--color-primary);
+}
+
+.legend-text {
+    font-size: 0.75rem;
+    color: var(--color-text-secondary);
+    font-weight: 500;
+}
+
+/* Tree container */
+.merge-tree-container {
+    display: flex;
+    justify-content: center;
+    overflow-x: auto;
+    padding: 8px 0;
+}
+
+.merge-tree-svg {
+    display: block;
+}
+
+/* Edges */
+.merge-tree-edge {
+    stroke: var(--color-border);
+    stroke-width: 2;
+    stroke-dasharray: 6 3;
+    transition: stroke 0.3s ease, stroke-width 0.3s ease, stroke-dasharray 0.3s ease;
+}
+
+.merge-tree-edge.merge-edge-active {
+    stroke: #8B5CF6;
+    stroke-width: 2.5;
+    stroke-dasharray: none;
+    filter: drop-shadow(0 0 4px rgba(139, 92, 246, 0.3));
+}
+
+/* Node boxes */
+.merge-tree-node-box {
+    fill: #FAFBFA;
+    stroke: var(--color-border);
+    stroke-width: 1.5;
+    transition: fill 0.3s ease, stroke 0.3s ease, filter 0.3s ease;
+}
+
+.merge-tree-node-box.merge-merging-left {
+    fill: rgba(212, 239, 255, 0.3);
+    stroke: #4AA3DF;
+    stroke-width: 2;
+    filter: drop-shadow(0 0 8px rgba(74, 163, 223, 0.2));
+}
+
+.merge-tree-node-box.merge-merging-right {
+    fill: rgba(255, 232, 214, 0.3);
+    stroke: #E8A34A;
+    stroke-width: 2;
+    filter: drop-shadow(0 0 8px rgba(232, 163, 74, 0.2));
+}
+
+.merge-tree-node-box.merge-merged {
+    fill: rgba(208, 240, 224, 0.4);
+    stroke: var(--color-primary);
+    stroke-width: 2;
+}
+
+/* Individual cells */
+.merge-cell {
+    fill: #FFFFFF;
+    stroke: var(--color-border);
+    stroke-width: 1;
+    transition: fill 0.2s ease, stroke 0.2s ease;
+}
+
+.merge-cell.left-pointer {
+    fill: #D4EFFF;
+    stroke: #4AA3DF;
+    stroke-width: 2;
+    filter: drop-shadow(0 0 4px rgba(74, 163, 223, 0.4));
+}
+
+.merge-cell.right-pointer {
+    fill: #FFE8D6;
+    stroke: #E8A34A;
+    stroke-width: 2;
+    filter: drop-shadow(0 0 4px rgba(232, 163, 74, 0.4));
+}
+
+.merge-cell.write-target {
+    fill: #E8D6FF;
+    stroke: #8B5CF6;
+    stroke-width: 2;
+    filter: drop-shadow(0 0 6px rgba(139, 92, 246, 0.5));
+}
+
+.merge-cell-text {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 700;
+    fill: var(--color-text);
+    pointer-events: none;
+    user-select: none;
+}
+
+.merge-range-label {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    font-weight: 500;
+    fill: var(--color-text-secondary);
+    pointer-events: none;
+    user-select: none;
+}
+
+/* ── MERGE BARS BELOW TREE ───────────────────────── */
+
+.merge-bars-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    padding: 16px 8px;
+    background: rgba(0, 0, 0, 0.02);
+    border-radius: var(--radius-md);
+    border: 1px solid var(--color-border);
+}
+
+.merge-bars-label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--color-text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.merge-bars-container {
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    gap: 2px;
+    height: 150px;
+    width: 100%;
+    padding: 0 8px;
+}
+
+.merge-bar-wrapper {
+    flex: 1;
+    max-width: 36px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+    height: 100%;
+    position: relative;
+}
+
+.merge-bar {
+    width: 100%;
+    min-height: 4px;
+    background: var(--color-border);
+    border-radius: 3px 3px 0 0;
+    transition: height 0.15s ease, background-color 0.2s ease;
+    opacity: 0.4;
+}
+
+.merge-bar.in-merge-range {
+    opacity: 1;
+    background: #E0E5E3;
+}
+
+.merge-bar.left-half {
+    opacity: 1;
+    background: #7EC8E3;
+}
+
+.merge-bar.right-half {
+    opacity: 1;
+    background: #F0C27A;
+}
+
+.merge-bar.write-pos {
+    opacity: 1;
+    background: #A78BFA;
+}
+
+.merge-bar.sorted {
+    opacity: 1;
+    background: var(--color-primary) !important;
+}
+
+.merge-bar-value {
+    font-size: 0.6rem;
+    color: var(--color-text-secondary);
+    margin-top: 3px;
+    font-family: var(--font-mono);
+}
+
+/* Pointer labels */
+.pointer-label {
+    position: absolute;
+    bottom: -20px;
+    font-family: var(--font-mono);
+    font-size: 0.6rem;
+    font-weight: 700;
+    padding: 1px 4px;
+    border-radius: 3px;
+    white-space: nowrap;
+}
+
+.pointer-l {
+    background: #D4EFFF;
+    color: #2B7AB5;
+}
+
+.pointer-r {
+    background: #FFE8D6;
+    color: #B57A2B;
+}
+
+.pointer-w {
+    background: #E8D6FF;
+    color: #6D28D9;
+}
+
 /* ── ARRAY REPRESENTATION ────────────────────────── */
 
 .heap-array-sections {
@@ -424,5 +695,17 @@
 
     .tree-container {
         overflow-x: auto;
+    }
+
+    .merge-tree-container {
+        overflow-x: auto;
+    }
+
+    .merge-bars-container {
+        height: 120px;
+    }
+
+    .merge-legend {
+        gap: 12px;
     }
 }
