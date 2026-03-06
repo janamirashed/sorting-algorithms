@@ -51,7 +51,7 @@ public class BubbleSortStrategy implements SortingStrategy {
                         i,
                         i + 1,
                         new int[0],
-                        stepCounter,
+                        ++stepCounter,
                         comparisons,
                         interchanges,
                         false));
@@ -68,7 +68,7 @@ public class BubbleSortStrategy implements SortingStrategy {
                             i,
                             i + 1,
                             new int[0],
-                            stepCounter,
+                            ++stepCounter,
                             comparisons,
                             interchanges,
                             false));

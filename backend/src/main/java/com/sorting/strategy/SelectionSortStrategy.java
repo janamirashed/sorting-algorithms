@@ -23,10 +23,12 @@ public class SelectionSortStrategy implements SortingStrategy {
                 }
             }
 
-            int temp = array[minIndex];
-            array[minIndex] = array[i];
-            array[i] = temp;
-            interchanges++;
+            if (minIndex != i) {
+                int temp = array[minIndex];
+                array[minIndex] = array[i];
+                array[i] = temp;
+                interchanges++;
+            }
         }
 
         long runtimeNanos = System.nanoTime() - startTime;
@@ -52,10 +54,12 @@ public class SelectionSortStrategy implements SortingStrategy {
                 }
             }
 
-            int temp = array[minIndex];
-            array[minIndex] = array[i];
-            array[i] = temp;
-            interchanges++;
+            if (minIndex != i) {
+                int temp = array[minIndex];
+                array[minIndex] = array[i];
+                array[i] = temp;
+                interchanges++;
+            }
             stepConsumer.accept(new SortingStep(
                     array.clone(), i, minIndex, new int[0], ++stepCounter, comparisons, interchanges, false));
         }
