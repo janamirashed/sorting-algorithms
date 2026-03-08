@@ -18,8 +18,6 @@ A comprehensive full-stack web application designed to implement, compare, and v
 ![Visualization Initial State](frontend/public/assets/visualization-start.png)
 *Initial randomly generated array ready for visualization.*
 
-![Visualization In Progress](frontend/public/assets/visualization-progress.png)
-*Sorting in progress, highlighting elements currently being compared or swapped.*
 
 **Advanced Tree Visualizations:**
 ![Merge Sort Tree Visualization](frontend/public/assets/visualization-merge-sort.png)
