@@ -4,27 +4,10 @@ A comprehensive full-stack web application designed to implement, compare, and v
 
 ## Application Interface
 
-### Comparison Mode
-![Sorting Comparison Configuration and Results](frontend/public/assets/comparison.png)
-*Configuring multiple algorithms to sort custom uploaded files, showing a detailed results table.*
-
-### Statistical Charts
-![Generated Charts](frontend/public/assets/charts.png)
-*Python-generated charts displaying average runtime with min/max error bars, comparisons, and interchanges.*
-
-### Visualization Mode
-
-**Standard Bar Animation:**
-![Visualization Initial State](frontend/public/assets/visualization-start.png)
-*Initial randomly generated array ready for visualization.*
-
-
-**Advanced Tree Visualizations:**
-![Merge Sort Tree Visualization](frontend/public/assets/visualization-merge-sort.png)
-*Merge Sort Visualizer — Dynamically illustrates the divide-and-conquer strategy natively inside the browser.*
-
-![Heap Sort Tree Visualization](frontend/public/assets/visualization-heap-sort.png)
-*Heap Sort Visualizer — Displaying the maximum element being swapped downwards in a calculated binary tree layout.*
+### Demo Video
+<video src="frontend/public/assets/demo.mp4" controls="controls" width="100%">
+  Your browser does not support the video tag.
+</video>
 
 ## Features
 
