@@ -5,9 +5,9 @@ A comprehensive full-stack web application designed to implement, compare, and v
 ## Application Interface
 
 ### Demo Video
-<video src="https://github.com/janamirashed/sorting-algorithms/raw/main/frontend/public/assets/demo.mp4" controls="controls" width="100%">
-  Your browser does not support the video tag.
-</video>
+[![Watch the Demo Video](frontend/public/assets/visualization-start.png)](https://github.com/janamirashed/sorting-algorithms/raw/main/frontend/public/assets/demo.mp4)
+
+*Click the image above to download and watch the full demo video.*
 
 ## Features
 
